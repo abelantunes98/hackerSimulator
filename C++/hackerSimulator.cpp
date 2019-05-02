@@ -152,6 +152,20 @@ void clear() {
 }
 
 /*
+ * Comando Help - Informa sobre como fazer uso dos outros comandos do jogo
+ */
+
+string help() {
+	string saida;
+	saida.append("\nCAT -  Comando que serve para a leitura de arquivos \nque estejam no diretório");	
+	saida.append("corrente // use: cat  nomeDoMeuArquivo\n\n");
+	saida.append("LS - Utilizado para listar o conteúdo do diretório corrente.   // use:   ls\n\n");			saida.append("RM - funciona apenas dentro de um diretório. // use:   rm nomeArquivo\n\n"); 			
+	saida.append("RMDIR - Comando usado para apagar um diretóeio // use: <rmdir nomeDiretorio>\n\n");			saida.append("CD - Serve para navegar entre diretórios // use: <cd pasta>  ou  <cd /dirPai/.../pasta>\n\n");
+	saida.append("EXIT - Use para deslogar do Servidor // use exit\n\n");
+	return saida;
+}
+
+/*
  * Recebe o comando, olha se ele existe no universo do jo, caso exista
  * faz o processamento necessario na string para gerar o retorno
  * desejado.
@@ -215,6 +229,10 @@ string escolheComando(string comando, Diretorio& diretorio) {
 
 	else if (comandoLoc.compare("rmdir") == 0) {
 		saida = rmdir(dirLoc);
+	}
+
+	else if (comandoLoc.compare("help") == 0) {
+	       saida = help();	
 	}
 
 	return saida;
@@ -387,6 +405,9 @@ int main(void) {
 	cout << "E-mail:\n             de: 4jud3m3@\n             para: xxxxxxxxxxxxxx\n	Oi estranho... não nos conhecemos, mas se você recebeu esse email é porque eu\njá estou morto. Essa mensagem estava programada para ser enviada pelo servidor apos\nele passar 14 dias sem que eu conseguisse logar. Bom, parece que isso realmente\naconteceu.\n\n	Sei que isso parece maluco, mas você a única pessoa que posso confiar nesse\nmomento, preciso de sua ajuda. Você tá dentro?\n	Se estiver a fim, entra no IP\nxxx.xxx.xx.xx, esse é meu servidor. Pega o último log, pois esse log provavelmente é de\nquem me queria fora da jogada. Mas muito cuidado, não quero que você acabe com eu\n "<< endl;
 	
 	esperaEnter();
+	cout << "Se tiver duvidas sobre os comandos digite <help> Sem as setas" <<endl;
+	esperaEnter();
+
 	loopSistema();
 
 	return 1;
