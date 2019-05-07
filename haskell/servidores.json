@@ -1,4 +1,6 @@
 [ 
+   
+
    {
     "nome" : "135.110.60.200",
     "subdiretorios" :
@@ -84,8 +86,8 @@
     [
 
     ]
-   }
-   ,
+},
+
    {
     "nome" : "112.84.211.1240",
     "subdiretorios" :
@@ -100,7 +102,7 @@
         [
             {
                 "nomeArq" :"iremos_te_pegar.txt",
-                "conteudo" :"NÃO ADIANTA SE ESCONDER, NÓS IREMOS TE ACHAR! VOCÊ ENTROU NO NOSSO CAMINHO, IREMOS APAGAR VOCÊ E TODOS OS SEUS VESTÍGIOS. YAKUZA NÃO CANSA, NÃO PARA E NÃO TEME."
+                "conteudo" :"N脙O ADIANTA SE ESCONDER, N脫S IREMOS TE ACHAR! VOC脢 ENTROU NO NOSSO CAMINHO, IREMOS APAGAR VOC脢 E TODOS OS SEUS VEST脥GIOS. YAKUZA N脙O CANSA, N脙O PARA E N脙O TEME."
             }
         ]
         }
@@ -166,9 +168,9 @@
     [
 
     ]
-   }
-   ,
-   {
+   },
+
+ {
     "nome" : "150.189.56.65",
     "subdiretorios" :
     [ 
@@ -202,14 +204,15 @@
             {
             "nome" : "bin",
             "subdiretorios" :
+            [
+            ],
+            
+            "arquivos" :
             [ 
                 {
                     "nomeArq" : "SSHCrack",
                     "conteudo" : "0010111100101010001011010010101100101110001011110010101000101101001010110010111000101111001010100010110100101011001011100010111100101010001011010010101100101110"
                 }
-            ],
-            "arquivos" :
-            [
         
             ]
             }
@@ -244,13 +247,14 @@
             ]
             }
     ],
+
     "arquivos" :
     [
 
     ]
-   }
-   ,
-   {
+   },
+   
+    {
     "nome" : "220.99.134.37",
     "subdiretorios" :
     [ 
@@ -261,4 +265,5 @@
 
     ]
    }
+
 ]
