@@ -50,6 +50,11 @@ lerJSON entrada =
   Right ps -> ps 
   Left err -> []
 
+-- Recebe o Nome de um servidor e a partir da leitura do Json
+-- Caso esse servidor exista no sistema, retorna o conteudo desse
+-- servidor. Nesse caso funciona para os 5 servidores existentes
+-- Caso seja adicionado outros, deve modificar a funcao
+-- pois ela itera por um numero especifico de elementos em um array
 retornaServidor :: [Diretorio] -> String -> Diretorio
 retornaServidor [a, b, c, d, e] nome 
  | nome == "135.110.60.200" = a
@@ -57,7 +62,20 @@ retornaServidor [a, b, c, d, e] nome
  | nome == "150.189.56.65" = c
  | nome == "220.99.134.37" = d
  | otherwise = e
- 
+
+-- Recebe um Diretorio e retorna o Array de subdiretorios desse Diretorio
+retornaSubdiretorios :: Diretorio -> [Diretorio]
+retornaSubdiretorios dir = subdiretorios dir
+
+-- Recebe um Diretorio e retorna o Array de Arquivos dele
+retornaArquivos :: Diretorio -> [Arquivo]
+retornaArquivos dir = arquivos dir
+
+-- Recebe um array e retorna o numero de elementos que ele possui
+len :: [a] -> Int
+len [] = 0
+len (h:t) = 1 + len t
+
 main :: IO ()
 main = do
 
@@ -69,4 +87,4 @@ main = do
 -- Depois que o valor torna-se concreto pode ser passado como parametro na funcao 
 -- lerJSON
  nome <- getLine
- print (retornaServidor (lerJSON d) nome)
+ print (len (retornaArquivos (retornaServidor (lerJSON d) nome)))
