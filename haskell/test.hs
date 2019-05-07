@@ -76,6 +76,28 @@ len :: [a] -> Int
 len [] = 0
 len (h:t) = 1 + len t
 
+-- Recebe o nome de um subdiretorio desejado e  o array de
+-- subdiretorios do diretorio atual se o subdiretorio 
+-- estiver presente no diretorio atual, retorna ele
+-- Esse array de Diretorios pode ser obtido pelo retorno da funcao
+-- retornaSubdiretorios -- Se nao houver o subdiretorio retorna um diretorio vazio
+retornaSubdiretorio :: [Diretorio] -> String -> Int -> Diretorio
+retornaSubdiretorio array nomeEsperado indiceAtual
+ | indiceAtual < len array && ((nome elemento) == nomeEsperado) = elemento
+ | indiceAtual < len array = retornaSubdiretorio array nomeEsperado (indiceAtual + 1)
+ | otherwise = Diretorio "" [] []  
+ where elemento = array !! indiceAtual
+
+-- Recebe o nome de um arquivo e o array de arquivos do diretorio atual, se o arquivo estiver presente
+-- no diretorio, retorna ele. Esse array de arquivos pode ser obtido pelo retorno da funcao
+-- retornaArquivos -- Se nao ouver o arquivo retorna um arquivo vazio
+retornaArquivo :: [Arquivo] -> String -> Int -> Arquivo
+retornaArquivo array nomeEsperado indiceAtual
+ | indiceAtual < len array && ((nomeArq elemento) == nomeEsperado) = elemento
+ | indiceAtual < len array = retornaArquivo array nomeEsperado (indiceAtual + 1) 
+ | otherwise = Arquivo "" ""
+ where elemento = array !! indiceAtual
+
 main :: IO ()
 main = do
 
@@ -83,8 +105,16 @@ main = do
 -- Isso é necessario porque antes desse passo o valor nao eh concreto  
 -- (DETALHE) essa atribuicao x <- y soh pode ser efetuada em um bloco (do)
  d <- retornaEither
- 
+
 -- Depois que o valor torna-se concreto pode ser passado como parametro na funcao 
 -- lerJSON
+ 
+-- Ip de um servidor para testar o retorno de um diretorio 
  nome <- getLine
- print (len (retornaArquivos (retornaServidor (lerJSON d) nome)))
+-- Nome do diretorio que quer o retorno
+ nomeDir <- getLine
+
+-- Exemplos de entrada 135.110.60.200 e home // Um por linha
+
+-- print (retornaSubdiretorio ( (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nome 0))
+ print (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0)
