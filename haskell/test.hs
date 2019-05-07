@@ -50,6 +50,14 @@ lerJSON entrada =
   Right ps -> ps 
   Left err -> []
 
+retornaServidor :: [Diretorio] -> String -> Diretorio
+retornaServidor [a, b, c, d, e] nome 
+ | nome == "135.110.60.200" = a
+ | nome == "112.84.211.1240" = b
+ | nome == "150.189.56.65" = c
+ | nome == "220.99.134.37" = d
+ | otherwise = e
+ 
 main :: IO ()
 main = do
 
@@ -60,4 +68,5 @@ main = do
  
 -- Depois que o valor torna-se concreto pode ser passado como parametro na funcao 
 -- lerJSON
- print (lerJSON d)
+ nome <- getLine
+ print (retornaServidor (lerJSON d) nome)
