@@ -98,6 +98,77 @@ retornaArquivo array nomeEsperado indiceAtual
  | otherwise = Arquivo "" ""
  where elemento = array !! indiceAtual
 
+-- Funcao que retorna o diretorio atual a partir da lista que guarda o caminho necessario
+-- para chegar ate ele.
+-- O uso de let nessa funcao foi apenas por questao de organizacao, para facilitar o entendimento
+-- ela ira acessar os diretorios recursivamente ateh chegar no ultimo nome de diretorio da lista
+-- que serah o que o usuario estarah no momento
+retornaDiretorioAtual :: Diretorio -> [Diretorio] -> [String] -> Int -> Int -> Diretorio 
+retornaDiretorioAtual dir subdirs nomes 0 num
+ 
+ | num > 1 = do
+  let servidor = retornaServidor subdirs (nomes !! 0)
+  let subDirsServ = retornaSubdiretorios servidor
+  retornaDiretorioAtual servidor subDirsServ nomes 1 (num - 1)
+ 
+ | otherwise = retornaServidor subdirs (nomes !! 0)
+
+retornaDiretorioAtual dir subdirs nomes indice 1 = do
+ retornaSubdiretorio subdirs (nomes !! indice) 0
+ 
+retornaDiretorioAtual dir subdirs nomes indice num = do
+ let subdir = retornaSubdiretorio subdirs (nomes !! (indice)) 0 
+ retornaDiretorioAtual subdir (retornaSubdiretorios subdir) nomes (indice + 1) (num - 1) 
+--
+--
+-- --------------Funcoes de uso no simulador---------
+--
+--
+-- Funcao que reduz o caminho do diretorio atual
+-- Recebe o array de Strings que possui o caminho ateh o
+-- diretorio atual e elimina o ultimo elemento, caso ja esteja
+-- na raiz, apenas retorna o mesmo caminho da entrada
+reduzCaminho :: [String] -> Int -> [String]
+reduzCaminho caminho indice
+ | (len caminho) == 1 = caminho
+ | indice == ((len caminho) - 1) = []
+ | otherwise = [caminho !! indice] ++ reduzCaminho caminho (indice + 1)
+
+-- Funcao que aumenta o caminho do diretorio atual
+-- Usado no CD, quando acessamos um novo diretirui
+aumentaCaminho :: [String] -> String -> [String]
+aumentaCaminho caminho dir = caminho ++ [dir]
+
+-- Funcao CD Recebe o nome do diretorio desejado, o caminho do diretorio atual
+-- e o diretorio atual, se o diretorio desejavel for alcancavel pelo atual
+-- retorna o caminho ate o diretorio atual modificado, caso nao seja um destino
+-- valido, retorna o caminho do diretorio atual da mesma forma que recebeu
+cd :: String -> Diretorio -> [String] -> [String]
+cd "" dir caminho = caminho
+cd ".." dir caminho = (reduzCaminho caminho 0)
+cd destino dir caminho
+ | nome retorno /= "" = aumentaCaminho caminho destino
+ | otherwise = caminho
+ where retorno = (retornaSubdiretorio (retornaSubdiretorios dir) destino 0)
+
+retornaNomesDirs :: [Diretorio] -> Int -> [String]
+retornaNomesDirs subs indice 
+ | len subs == 0 = []
+ | indice == ((len subs) - 1) = [nome (subs !! indice)]
+ | otherwise = [nome (subs !! indice)] ++ retornaNomesDirs subs (indice + 1)
+
+ 
+retornaNomesArqs :: [Arquivo] -> Int -> [String]
+retornaNomesArqs arqs indice 
+ | len arqs == 0 = []
+ | indice == ((len arqs) - 1) = [nomeArq (arqs !! indice)]
+ | otherwise = [nomeArq (arqs !! indice)] ++ retornaNomesArqs arqs (indice + 1)
+
+--ordenaLista :: [String] -> [String]
+
+--ls :: Diretorio -> String
+
+
 main :: IO ()
 main = do
 
@@ -105,7 +176,7 @@ main = do
 -- Isso é necessario porque antes desse passo o valor nao eh concreto  
 -- (DETALHE) essa atribuicao x <- y soh pode ser efetuada em um bloco (do)
  d <- retornaEither
-
+ let dirAtual = ["135.110.60.200", "sys"]
 -- Depois que o valor torna-se concreto pode ser passado como parametro na funcao 
 -- lerJSON
  
@@ -115,6 +186,9 @@ main = do
  nomeDir <- getLine
 
 -- Exemplos de entrada 135.110.60.200 e home // Um por linha
-
+ let dirVazio = (Diretorio "" [] [])
+ let subDirs = (lerJSON d)
 -- print (retornaSubdiretorio ( (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nome 0))
- print (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0)
+--print (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0)
+--print (lerJSON d)
+ print (retornaNomesArqs (retornaArquivos (retornaDiretorioAtual dirVazio subDirs dirAtual 0 2)) 0)
