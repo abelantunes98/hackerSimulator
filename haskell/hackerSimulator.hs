@@ -202,6 +202,16 @@ retornaSaidaLs (h:t) cont
 ls :: Diretorio -> String
 ls dir = retornaSaidaLs (ordenaLista ( (retornaNomesArqs (retornaArquivos dir) 0) ++ ( retornaNomesDirs (retornaSubdiretorios dir) 0) )) 0
 
+-- Funcao connect - Recebe um ip e caso esse ip exista no jogo retorna uma nova 
+-- lista para representar o diretorio atual, caso nao exista o ip, retorna uma
+-- lista vazia
+connect :: String -> [String]
+connect "135.110.60.200" = ["135.110.60.200", "home"]
+connect "112.84.211.1240" = ["112.84.211.1240", "home"]
+connect "150.189.56.65" = ["150.189.56.65", "home"]
+connect "220.99.134.37" = ["220.99.134.37"]
+connect outro = []
+
 main :: IO ()
 main = do
 
