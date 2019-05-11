@@ -151,23 +151,56 @@ cd destino dir caminho
  | otherwise = caminho
  where retorno = (retornaSubdiretorio (retornaSubdiretorios dir) destino 0)
 
+-- Funcao que retorna o nome dos subdiretorios de um local
+-- usada para a funcao ls
 retornaNomesDirs :: [Diretorio] -> Int -> [String]
 retornaNomesDirs subs indice 
  | len subs == 0 = []
  | indice == ((len subs) - 1) = [nome (subs !! indice)]
  | otherwise = [nome (subs !! indice)] ++ retornaNomesDirs subs (indice + 1)
 
- 
+-- Funcao qoe retorna os nomes dos arquivos de um local, usada
+-- na funcao ls
 retornaNomesArqs :: [Arquivo] -> Int -> [String]
 retornaNomesArqs arqs indice 
  | len arqs == 0 = []
  | indice == ((len arqs) - 1) = [nomeArq (arqs !! indice)]
  | otherwise = [nomeArq (arqs !! indice)] ++ retornaNomesArqs arqs (indice + 1)
 
---ordenaLista :: [String] -> [String]
+-- Funcao que retorna o menor elemento de uma lista
+-- usada no insertion sort
+menorLista :: (Ord l) => [l] -> l
+menorLista [x] = x
+menorLista (h:t) 
+ | h <= menorLista t = h
+ | otherwise = menorLista t
 
---ls :: Diretorio -> String
+-- Funcao que remove um elemento de uma lista, usada no insertion sort
+removeDaLista :: (Ord l) => [l] -> l -> [l]
+removeDaLista [] elem= []
+removeDaLista (h:t) elem
+ | h == elem = t
+ |otherwise = [h] ++ removeDaLista t elem 
 
+-- Funcao que ordena uma lista por meio de um insertion sort
+-- pode usar para qualquer lista de elementos ordenaveis
+ordenaLista :: (Ord a) => [a] -> [a]
+ordenaLista [] = []
+ordenaLista lista = [menor]  ++ ordenaLista (removeDaLista lista menor)
+ where menor = menorLista lista
+
+-- Funcao que organixa o print da funcao ls, dando espacp entre os nomes e
+-- pulando linhas
+retornaSaidaLs :: [String] -> Int -> String
+retornaSaidaLs [] cont = ""
+retornaSaidaLs (h:t) cont
+ | cont < 8 = h ++ " " ++ retornaSaidaLs t (cont + 1)
+ | otherwise = h ++ "\n" ++ retornaSaidaLs t 0
+
+-- Funcao ls - Recebe um dirtorio e retorna seus subdiretorios e seus arquivos 
+-- em ordem alfabetica
+ls :: Diretorio -> String
+ls dir = retornaSaidaLs (ordenaLista ( (retornaNomesArqs (retornaArquivos dir) 0) ++ ( retornaNomesDirs (retornaSubdiretorios dir) 0) )) 0
 
 main :: IO ()
 main = do
@@ -189,6 +222,7 @@ main = do
  let dirVazio = (Diretorio "" [] [])
  let subDirs = (lerJSON d)
 -- print (retornaSubdiretorio ( (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nome 0))
---print (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0)
+ print (ls (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0))
 --print (lerJSON d)
- print (retornaNomesArqs (retornaArquivos (retornaDiretorioAtual dirVazio subDirs dirAtual 0 2)) 0)
+-- print (retornaNomesArqs (retornaArquivos (retornaDiretorioAtual dirVazio subDirs dirAtual 0 2)) 0)
+-- putStrLn (retornaSaidaLs ["aaaaaaaaaaa", "aaaaaaaaaaa", "aaaaaaaaaaa","aaaaaaaaaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa"] 0)
