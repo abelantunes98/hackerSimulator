@@ -6,7 +6,7 @@ import Data.Text
 import qualified Data.ByteString.Lazy as B
 import GHC.Generics
 import GHC.Read
-
+import Help
 
 -- Tupla para representar um arquivo
 data Arquivo =
@@ -151,6 +151,23 @@ cd destino dir caminho
  | otherwise = caminho
  where retorno = (retornaSubdiretorio (retornaSubdiretorios dir) destino 0)
 
+-- Recebe uma lista e um elemento e retorna True caso o elemento nao esteja na
+-- lista ou False caso ele esteja. Usada na funcao RM
+listaNaoPossui :: (Eq a) => [a] -> a -> Bool
+listaNaoPossui [] a = True
+listaNaoPossui (h:t) a
+ | a == h = False
+ | otherwise = listaNaoPossui t a
+
+-- Funcao que verifica se um arquivo foi apagado, a partir do nome do arquivo
+-- Uma lista de arquivos ja apagados e o diretorio atual. Retorna True
+-- Caso o arquivo nao tenha sido apagado e False caso contrario
+verificaNomeArquivo :: String -> [String] -> [(String, String)] -> Bool
+verificaNomeArquivo nome dirAtual apagados
+ | listaNaoPossui apagados (servidor, nome) = True
+ | otherwise = False
+ where servidor = (dirAtual !! 0) 
+
 -- Funcao que retorna o nome dos subdiretorios de um local
 -- usada para a funcao ls
 retornaNomesDirs :: [Diretorio] -> Int -> [String]
@@ -212,6 +229,15 @@ connect "150.189.56.65" = ["150.189.56.65", "home"]
 connect "220.99.134.37" = ["220.99.134.37"]
 connect outro = []
 
+-- Funcao CAT, recebe um diretorio e o nome de um arquivo, se o arquivo existir
+-- retorna seu conteudo, caso contrario, retorna uma mensagem informando que
+-- o arquivo nao existe
+cat :: Diretorio -> String -> String
+cat dir nome
+ | nomeArq arquivo == "" = "Arquvo " ++ nome ++ " nao encontrado."
+ | otherwise = conteudo arquivo
+ where arquivo = retornaArquivo (retornaArquivos dir) nome 0
+
 main :: IO ()
 main = do
 
@@ -220,6 +246,10 @@ main = do
 -- (DETALHE) essa atribuicao x <- y soh pode ser efetuada em um bloco (do)
  d <- retornaEither
  let dirAtual = ["135.110.60.200", "sys"]
+ -- Lista com o nome dos arquivos que foram apagado em tuplas com o servidor a 
+ -- qual eles pertencem
+ let arquivosApagados = [("135.110.60.200", "i"),("","")]
+
 -- Depois que o valor torna-se concreto pode ser passado como parametro na funcao 
 -- lerJSON
  
@@ -227,12 +257,13 @@ main = do
  nome <- getLine
 -- Nome do diretorio que quer o retorno
  nomeDir <- getLine
+ nomeArq <- getLine
 
 -- Exemplos de entrada 135.110.60.200 e home // Um por linha
- let dirVazio = (Diretorio "" [] [])
- let subDirs = (lerJSON d)
 -- print (retornaSubdiretorio ( (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nome 0))
- print (ls (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0))
---print (lerJSON d)
+-- print (cat (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0) nomeArq)
+-- print (lerJSON d)
 -- print (retornaNomesArqs (retornaArquivos (retornaDiretorioAtual dirVazio subDirs dirAtual 0 2)) 0)
--- putStrLn (retornaSaidaLs ["aaaaaaaaaaa", "aaaaaaaaaaa", "aaaaaaaaaaa","aaaaaaaaaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa"] 0)
+-- putStrLn (retornaSaidaLs ["aaaaaaaaaaa", "aaaaaaaaaaa", "aaaaaaaaaaa","aaaaaaaaaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa"] 0) 
+-- help
+ print (verificaNomeArquivo "ip" dirAtual arquivosApagados)
