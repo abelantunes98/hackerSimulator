@@ -7,6 +7,7 @@ import qualified Data.ByteString.Lazy as B
 import GHC.Generics
 import GHC.Read
 import Help
+import Data.List.Split
 
 -- Tupla para representar um arquivo
 data Arquivo =
@@ -238,6 +239,29 @@ cat dir nome
  | otherwise = conteudo arquivo
  where arquivo = retornaArquivo (retornaArquivos dir) nome 0
 
+caseFuncao :: String -> (Diretorio -> String -> String)
+--caseFuncao "cd" = cd
+caseFuncao "cat" = cat
+--caseFuncao "rm" = rm
+--caseFuncao "ssh" = ssh
+--caseFuncao "connect" = connect
+--caseFuncao "ls" = ls
+
+-- Chama uma das funcoes do sistema de arquivos e retorna o retorno dela.
+chamaFuncao :: String -> String
+chamaFuncao entrada = do
+  let splitted = Data.List.Split.splitOn " " entrada
+  let funcao = caseFuncao (Prelude.head splitted)
+  funcao (Prelude.tail splitted)
+
+-- Loop principal; recebe um comando, executa ele e depois chama a si mesma com um
+-- novo comando.
+play word = do
+  putStrLn word -- comenta essa linha depois
+  line <- getLine :: String
+  chamaFuncao line
+  play line
+
 main :: IO ()
 main = do
 
@@ -267,3 +291,5 @@ main = do
 -- putStrLn (retornaSaidaLs ["aaaaaaaaaaa", "aaaaaaaaaaa", "aaaaaaaaaaa","aaaaaaaaaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa"] 0) 
 -- help
  print (verificaNomeArquivo "ip" dirAtual arquivosApagados)
+ print "loop principal..."
+ play ""
