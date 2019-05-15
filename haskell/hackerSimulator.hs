@@ -275,6 +275,12 @@ connect "150.189.56.65" = ["150.189.56.65", "home"]
 connect "220.99.134.37" = ["220.99.134.37"]
 connect outro = ["erro"]
 
+disconnect :: [String] -> String
+disconnect lista
+ | servidor == "135.110.60.200" = "Você não está conectado a um servidor remoto."
+ | otherwise = "Desconectando..."
+ where servidor = (lista !! 0)
+
 -- Funcao CAT, recebe um diretorio e o nome de um arquivo, se o arquivo existir
 -- retorna seu conteudo, caso contrario, retorna uma mensagem informando que
 -- o arquivo nao existe
@@ -287,6 +293,8 @@ cat dir nome dirAtual apagados
   arquivo = retornaArquivo (retornaArquivos dir) nome 0
   servidor = dirAtual !! 0
 
+-- Funcao que apaga um arquivo de um Diretorio - Parametros : diretorioAtual nomeArquivo
+-- arquivosApagados CaminhoDirAtual - Retorna uma nova lista de diretorios apagados
 rm :: Diretorio -> String -> [(String, String)] -> [String] -> [(String,String)]
 rm dir "" apagados  dirAtual = apagados
 rm dir nomeArquivo apagados dirAtual
@@ -296,13 +304,23 @@ rm dir nomeArquivo apagados dirAtual
   arquivo = (retornaArquivo (retornaArquivos dir) nomeArquivo 0)
   servidor = (dirAtual !! 0)
 
+-- Funcao que formata o caminho atual do usuario para exibir no console
+-- Parametros: CaminhoDirAtual
+-- Saida: CamihoDirAtual formatado
+formataCaminhoAtual :: [String] -> String
+formataCaminhoAtual [] = ""
+formataCaminhoAtual (h:t) = h ++ "/" ++ (formataCaminhoAtual t)
+
+-- Funcao que recebe a entrada do usuario, identifica qual o comando desejado e seus atributos
+-- Parametros: Funcao DiretorioAtual Parametro CamihoDirAtual ArquivosApagados
+-- Retorno: Saida da funcao desejada
 chamaFuncao :: String -> Diretorio -> String -> [String] -> [(String,String)] -> String
 chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados
  | funcao == "ls" = ls diretorio dirAtual arquivosApagados
  | funcao == "cat" = cat diretorio arquivo dirAtual arquivosApagados
  | funcao == "connect" = do
   let resultadoConnect = connect arquivo
-  if (Prelude.head resultadoConnect == "erro") then "mensagem de erro" else "Connecting to " ++ Prelude.head (connect arquivo) ++ "..."
+  if (Prelude.head resultadoConnect == "erro") then "Informe um Host válido." else "Connecting to " ++ Prelude.head (connect arquivo) ++ "..."
  | funcao == "cd" = do
   let resultadoCd = cd arquivo diretorio dirAtual
   if (Prelude.head resultadoCd == "erro") then "mensagem de erro" else ""
@@ -311,7 +329,9 @@ chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados
   if (resultadoRm == [("erro", "")]) then "Digite um nome de arquivo valido apos o RM." else if (resultadoRm == arquivosApagados) then "Informe o nome de um arquivo para apagar." else ""
  | funcao == "help" = help
  | funcao == "exit" = "Terminando programa..."
- | otherwise = "Comando nao encontrado" -- TROCAR ESSE TEXTO POR ALGO MAIS BONITINHO
+ | funcao == "disconnect" = do
+  if (arquivo /= "") then ("A funcao Disconnect nao precisa de parametros.") else (disconnect dirAtual)
+ | otherwise = "Comando desconhecido: " ++ funcao -- TROCAR ESSE TEXTO POR ALGO MAIS BONITINHO
 
 -- Loop principal; recebe um comando, executa ele e depois chama a si mesma com um
 -- novo comando.
@@ -320,22 +340,23 @@ mainLoop dirAtual arquivosApagados = do
   let dirVazio = Diretorio "" [] []
   let diretorio = (retornaDiretorioAtual dirVazio (lerJSON d) dirAtual 0 (len dirAtual))
   
-  putStr (" " ++ (show dirAtual) ++ " >> ")
+  putStr ("root@" ++ (formataCaminhoAtual dirAtual) ++ ":>> ")
 
   entrada <- getLine
   let splitted = Data.List.Split.splitOn " " entrada
   let nomeFuncao = Prelude.head splitted
   let nomeArquivo = if (len splitted > 1) then Prelude.head (Prelude.tail splitted) else ""
 
-  putStrLn (chamaFuncao nomeFuncao diretorio nomeArquivo dirAtual arquivosApagados)
+  let resultChamaFuncao = (chamaFuncao nomeFuncao diretorio nomeArquivo dirAtual arquivosApagados)
+  if (resultChamaFuncao == "") then (putStr "") else (putStrLn resultChamaFuncao)  
 
-  let resultadoTroca = (if nomeFuncao == "cd" then (cd nomeArquivo diretorio dirAtual) else (if nomeFuncao == "connect" then (connect nomeArquivo) else dirAtual))
+  let resultadoTroca = (if nomeFuncao == "cd" then (cd nomeArquivo diretorio dirAtual) else (if nomeFuncao == "connect" then (connect nomeArquivo) else (if (nomeFuncao == "disconnect") then (["135.110.60.200", "home"]) else dirAtual)))
   let novoDirAtual = if (Prelude.head resultadoTroca == "erro") then dirAtual else resultadoTroca
 
   let saidaRm = if (nomeFuncao == "rm") then (rm diretorio nomeArquivo arquivosApagados dirAtual) else (arquivosApagados)
   let novosArquivosApagados = if (saidaRm /= [("erro", "")]) then (saidaRm) else (arquivosApagados)
   
-  if entrada == "exit" then (putStrLn ("Tchau")) else mainLoop novoDirAtual novosArquivosApagados -- cada comando aumenta a pilha de recursão! tadinho do stack
+  if entrada == "exit" then (putStr "") else mainLoop novoDirAtual novosArquivosApagados -- cada comando aumenta a pilha de recursão! tadinho do stack
 
 main :: IO ()
 main = do
@@ -345,7 +366,7 @@ main = do
   d <- retornaEither
   m <- retornaEitherM
   
-  let dirAtual = ["135.110.60.200"]
+  let dirAtual = ["135.110.60.200", "home"]
   -- Lista com o nome dos arquivos que foram apagado em tuplas com o servidor a 
   -- qual eles pertencem
   let arquivosApagados = [("135.110.60.200", "i"),("","")]
