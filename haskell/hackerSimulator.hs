@@ -72,6 +72,7 @@ lerJSON entrada =
   Right ps -> ps 
   Left err -> []
 
+-- Retorna uma lista de mensagens a partir da leitura do JSON de mensagens
 lerJSONM :: Either String [Mensagem] -> [Mensagem]
 lerJSONM entrada =
  case entrada of
@@ -126,12 +127,18 @@ retornaArquivo array nomeEsperado indiceAtual
  | otherwise = Arquivo "" ""
  where elemento = array !! indiceAtual
 
+-- Funcao que retorna uma mensagem pelo seu id
+-- Parametros: Lista de mensagens e ID da mensagem desejada
+-- Retorno: Mensagem escolhida ou uma Mensagem que representa um erro
 retornaMensagem :: [Mensagem] -> Int -> Mensagem
-retornaMensagem [] idIn = (Mensagem 999 "")
+retornaMensagem [] idIn = (Mensagem 999 "") -- Se o id nao existir
 retornaMensagem (h:t) idIn
  | idm h == idIn = h
  | otherwise = retornaMensagem t idIn
 
+-- Funcao que ler o conteudo de uma mensagem
+-- Parametros: Mensagem
+-- Retorno: Conteudo Da mensagem
 retornaConteudoMensagem :: Mensagem -> String
 retornaConteudoMensagem msg
  | idm msg == 999 = "Mensagem Inexiste"
