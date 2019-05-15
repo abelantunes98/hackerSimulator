@@ -251,8 +251,8 @@ ordenaLista lista = [menor]  ++ ordenaLista (removeDaLista lista menor)
 retornaSaidaLs :: [String] -> Int -> String
 retornaSaidaLs [] cont = ""
 retornaSaidaLs (h:t) cont
- | cont < 8 = h ++ " " ++ retornaSaidaLs t (cont + 1)
- | otherwise = h ++ "\n" ++ retornaSaidaLs t 0
+ | cont < 8  && (verificaNomeArquivo h dirAtual apagados) = h ++ " " ++ retornaSaidaLs t (cont + 1)
+ | otherwise = "\n" ++ retornaSaidaLs t 0
 
 -- Funcao ls - Recebe um dirtorio e retorna seus subdiretorios e seus arquivos 
 -- em ordem alfabetica
