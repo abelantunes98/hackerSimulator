@@ -1,11 +1,36 @@
 [
     {
-        "idM" : 0,
+        "idm" : 0,
         "mensagem" : "Iniciando HackSimulator..."
     }
     ,
     {
-        "idM" : 1,
-        "mensagem" : "Oi. \n .... \nIsso é bem estranho... tanto pra você quanto pra mim. Eu acho que deveria escrever isso no passado, mesmo que seja difícil admitir que acabou. Meu nome é Hash, e se você está lendo isso, provavelmente eu já esteja morto."
+        "idm" : 1,
+        "mensagem" : "Oi.\n ....\nIsso é bem estranho... tanto pra você quanto pra mim.\nEu acho que deveria escrever isso no passado, mesmo que seja difícil admitir que\nacabou.\nMeu nome é Hash, e se você está lendo isso, provavelmente eu já esteja morto."
+    }
+    ,
+    {
+        "idm" : 2,
+        "mensagem" : "E-mail:\nde: 4jud3m3@  volta o que tava aqui que ja alterei\npara: xxxxxxxxxxxxxx\n\nOi estranho... não nos conhecemos, mas se você recebeu esse email é porque eu já estou morto. Essa mensagem estava programada para ser enviada pelo servidor após ele passar 14 dias sem que eu conseguisse logar. Bom, parece que isso realmente aconteceu.\n\nSei que isso parece maluco, mas você a única pessoa que posso confiar nesse momento, preciso de sua ajuda. Você tá dentro? Se estiver a fim, entra no IP xxx.xxx.xx.xx, esse é meu servidor. Pega o último log, pois esse log provavelmente é de quem me queria fora da jogada. Mas muito cuidado, não quero que você acabe com eu.\n\n\nignorar ou aceitar?"
+    }
+    ,
+    {
+        "idm" : 3,
+        "mensagem" : "E-mail (aceito)\n\nObrigado por aceitar, isso mostra que tens determinação.\n\nOK, vamos parar de conversas e partir para a ação:\n\nExecute o programa que foi enviado para sua pasta /home, ele auxiliará você nos próximos passos.\n\n*Lembre-se que para executar um programa basta digitar ./nome_do_programa"
+    }
+    ,
+    {
+        "idm" : 4,
+        "mensagem" : "HACKNET\n\npressione a tecla ENTER para continuar..."
+    }
+    ,
+    {
+        "idm" : 5,
+        "mensagem" : "Dica: Digite no terminal o comando “connect [ip]”, sem as aspas, e trocando o trecho [ip], pelo número ip da minha maquina “112.84.211.124”. Para assim se conectar a minha máquina."
+    }
+    ,
+    {
+        "idm" : 6,
+        "mensagem" : "HACKNET: procure no meu sistema de arquivos vestígios. Procure por mensagens que possam ter deixado em meu PC por alguma pasta, e principalmente você tem que achar algum IP diferente do meu e do seu, na pasta de LOGs do sistema de arquivos. Para ver o conteúdo das pastas use o comando “ls”. Para entrar e sair das pastas, use o comando “cd”. Encontrando o ip, não esqueça de anotar, pois no final ao olhar tudo dos meus arquivos, você deve apagar todos os ip’s da pasta LOG para evitar que lhe achem. Para desconectar do servidor, é só usar o comando “dc”."
     }
 ]
