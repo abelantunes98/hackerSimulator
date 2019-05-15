@@ -159,6 +159,12 @@ retornaDiretorioAtual dir subdirs nomes indice 1 = do
 retornaDiretorioAtual dir subdirs nomes indice num = do
  let subdir = retornaSubdiretorio subdirs (nomes !! (indice)) 0 
  retornaDiretorioAtual subdir (retornaSubdiretorios subdir) nomes (indice + 1) (num - 1) 
+
+-- Funcao que inverte um boolean
+notA :: Bool -> Bool
+notA True = False
+notA False = True
+
 --
 --
 -- --------------Funcoes de uso no simulador---------
@@ -248,16 +254,16 @@ ordenaLista lista = [menor]  ++ ordenaLista (removeDaLista lista menor)
 
 -- Funcao que organixa o print da funcao ls, dando espacp entre os nomes e
 -- pulando linhas
-retornaSaidaLs :: [String] -> Int -> String
-retornaSaidaLs [] cont = ""
-retornaSaidaLs (h:t) cont
- | cont < 8  && (verificaNomeArquivo h dirAtual apagados) = h ++ " " ++ retornaSaidaLs t (cont + 1)
- | otherwise = "\n" ++ retornaSaidaLs t 0
+retornaSaidaLs :: [String] -> Int -> [String] -> [(String, String)] -> String
+retornaSaidaLs [] cont dirAtual apagados= ""
+retornaSaidaLs (h:t) cont dirAtual apagados
+ | cont < 8  && (verificaNomeArquivo h dirAtual apagados) = h ++ " " ++ retornaSaidaLs t (cont + 1) dirAtual apagados
+ | otherwise = "\n" ++ retornaSaidaLs t 0 dirAtual apagados
 
 -- Funcao ls - Recebe um dirtorio e retorna seus subdiretorios e seus arquivos 
 -- em ordem alfabetica
-ls :: Diretorio -> String
-ls dir = retornaSaidaLs (ordenaLista ( (retornaNomesArqs (retornaArquivos dir) 0) ++ ( retornaNomesDirs (retornaSubdiretorios dir) 0) )) 0
+ls :: Diretorio -> [String] -> [(String, String)] -> String
+ls dir dirAtual apagados = retornaSaidaLs (ordenaLista ( (retornaNomesArqs (retornaArquivos dir) 0) ++ ( retornaNomesDirs (retornaSubdiretorios dir) 0) )) 0 dirAtual apagados
 
 -- Funcao connect - Recebe um ip e caso esse ip exista no jogo retorna uma nova 
 -- lista para representar o diretorio atual, caso nao exista o ip, retorna uma
@@ -272,23 +278,37 @@ connect outro = ["erro"]
 -- Funcao CAT, recebe um diretorio e o nome de um arquivo, se o arquivo existir
 -- retorna seu conteudo, caso contrario, retorna uma mensagem informando que
 -- o arquivo nao existe
-cat :: Diretorio -> String -> String
-cat dir nome
- | nomeArq arquivo == "" = "Arquvo " ++ nome ++ " nao encontrado."
+cat :: Diretorio -> String ->[String] -> [(String,String)] -> String
+cat dir "" dirAtual apagados = "Informe o nome de um arquivo para ler."
+cat dir nome dirAtual apagados
+ | nomeArq arquivo == "" || (notA (listaNaoPossui apagados (servidor, nome))) = "Arquivo " ++ nome ++ " nao encontrado."
  | otherwise = conteudo arquivo
- where arquivo = retornaArquivo (retornaArquivos dir) nome 0
+ where 
+  arquivo = retornaArquivo (retornaArquivos dir) nome 0
+  servidor = dirAtual !! 0
 
-chamaFuncao :: String -> Diretorio -> String -> [String] -> String -> String
+rm :: Diretorio -> String -> [(String, String)] -> [String] -> [(String,String)]
+rm dir "" apagados  dirAtual = apagados
+rm dir nomeArquivo apagados dirAtual
+ | nomeArq arquivo /= "" && (listaNaoPossui apagados (servidor,nomeArquivo)) = apagados ++ [(servidor,nomeArquivo)]
+ | otherwise = [("erro","")]
+ where 
+  arquivo = (retornaArquivo (retornaArquivos dir) nomeArquivo 0)
+  servidor = (dirAtual !! 0)
+
+chamaFuncao :: String -> Diretorio -> String -> [String] -> [(String,String)] -> String
 chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados
- | funcao == "ls" = ls diretorio --arquivosApagados
- | funcao == "cat" = cat diretorio arquivo --arquivosApagados
+ | funcao == "ls" = ls diretorio dirAtual arquivosApagados
+ | funcao == "cat" = cat diretorio arquivo dirAtual arquivosApagados
  | funcao == "connect" = do
   let resultadoConnect = connect arquivo
   if (Prelude.head resultadoConnect == "erro") then "mensagem de erro" else "Connecting to " ++ Prelude.head (connect arquivo) ++ "..."
  | funcao == "cd" = do
   let resultadoCd = cd arquivo diretorio dirAtual
   if (Prelude.head resultadoCd == "erro") then "mensagem de erro" else ""
- | funcao == "rm" = "" --colocar coisa do erro aqui
+ | funcao == "rm" = do
+  let resultadoRm = rm diretorio arquivo arquivosApagados dirAtual
+  if (resultadoRm == [("erro", "")]) then "Digite um nome de arquivo valido apos o RM." else if (resultadoRm == arquivosApagados) then "Informe o nome de um arquivo para apagar." else ""
  | funcao == "help" = help
  | funcao == "exit" = "Terminando programa..."
  | otherwise = "Comando nao encontrado" -- TROCAR ESSE TEXTO POR ALGO MAIS BONITINHO
@@ -312,7 +332,8 @@ mainLoop dirAtual arquivosApagados = do
   let resultadoTroca = (if nomeFuncao == "cd" then (cd nomeArquivo diretorio dirAtual) else (if nomeFuncao == "connect" then (connect nomeArquivo) else dirAtual))
   let novoDirAtual = if (Prelude.head resultadoTroca == "erro") then dirAtual else resultadoTroca
 
-  let novosArquivosApagados = if nomeFuncao == "rm" then rm diretorio nomeArquivo arquivosApagados else arquivosApagados
+  let saidaRm = if (nomeFuncao == "rm") then (rm diretorio nomeArquivo arquivosApagados dirAtual) else (arquivosApagados)
+  let novosArquivosApagados = if (saidaRm /= [("erro", "")]) then (saidaRm) else (arquivosApagados)
   
   if entrada == "exit" then (putStrLn ("Tchau")) else mainLoop novoDirAtual novosArquivosApagados -- cada comando aumenta a pilha de recursão! tadinho do stack
 
