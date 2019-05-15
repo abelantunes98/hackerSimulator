@@ -25,7 +25,7 @@ data Diretorio =
 -- Objeto que representa um mensagem para ser passada ao
 -- usuario
 data Mensagem =
- Mensagem { idM :: !Int,
+ Mensagem { idm :: !Int,
  mensagem :: !String
  } deriving (Show, Generic, Read)
 
@@ -129,12 +129,12 @@ retornaArquivo array nomeEsperado indiceAtual
 retornaMensagem :: [Mensagem] -> Int -> Mensagem
 retornaMensagem [] idIn = (Mensagem 999 "")
 retornaMensagem (h:t) idIn
- | idM h == idIn = h
+ | idm h == idIn = h
  | otherwise = retornaMensagem t idIn
 
 retornaConteudoMensagem :: Mensagem -> String
 retornaConteudoMensagem msg
- | idM msg == 999 = "Mensagem Inexiste"
+ | idm msg == 999 = "Mensagem Inexiste"
  | otherwise = mensagem msg
 
 -- Funcao que retorna o diretorio atual a partir da lista que guarda o caminho necessario
@@ -142,6 +142,7 @@ retornaConteudoMensagem msg
 -- O uso de let nessa funcao foi apenas por questao de organizacao, para facilitar o entendimento
 -- ela ira acessar os diretorios recursivamente ateh chegar no ultimo nome de diretorio da lista
 -- que serah o que o usuario estarah no momento
+
 retornaDiretorioAtual :: Diretorio -> [Diretorio] -> [String] -> Int -> Int -> Diretorio 
 retornaDiretorioAtual dir subdirs nomes 0 num
  
@@ -277,30 +278,41 @@ cat dir nome
  | otherwise = conteudo arquivo
  where arquivo = retornaArquivo (retornaArquivos dir) nome 0
 
---caseFuncao :: String -> (Diretorio -> String -> String)
---caseFuncao "cd" = cd
---caseFuncao "cat" = cat
---caseFuncao "rm" = rm
---caseFuncao "ssh" = ssh
---caseFuncao "connect" = connect
-caseFuncao "ls" = ls
+caseFuncao :: String -> Diretorio -> String -> String
+caseFuncao funcao diretorio arquivo
+ | funcao == "ls" = ls diretorio
+ | funcao == "cat" = cat diretorio arquivo
+ | funcao == "connect" = show (connect arquivo)
+ | funcao == "cd" = show (cd arquivo diretorio caminhoAtual) -- trocar connect e cd por funções que ALTERAM ESTADO!!!!
+ -- | funcao == "rm" = rm
+ -- | funcao == "ssh" = ssh
+ | funcao == "help" = help
+ | funcao == "exit" = "Terminando programa..."
+ | otherwise = "Comando nao encontrado" -- TROCAR ESSE TEXTO POR ALGO MAIS BONITINHO
 
 -- Chama uma das funcoes do sistema de arquivos e retorna o retorno dela.
-chamaFuncao :: String -> String
-chamaFuncao entrada = do
+chamaFuncao :: Diretorio -> String -> String
+chamaFuncao diretorio entrada = do
   let splitted = Data.List.Split.splitOn " " entrada
-  let funcao = caseFuncao (Prelude.head splitted)
-  --d <- retornaEither
-  --let diretorios = lerJSON d
-  --funcao (diretorios !! 0 ) --(Prelude.tail splitted)
-  ""
+  let nomeFuncao = Prelude.head splitted
+  let nomeArquivo = Prelude.head (Prelude.tail splitted)
+  
+  caseFuncao nomeFuncao diretorio nomeArquivo
+
+caminhoAtual :: [String]
+caminhoAtual = ["135.110.60.200", "home"]
 
 -- Loop principal; recebe um comando, executa ele e depois chama a si mesma com um
 -- novo comando.
 mainLoop = do
   entrada <- getLine
-  putStrLn (chamaFuncao entrada)
-  if entrada == "exit" then (putStrLn ("exiting")) else mainLoop -- cada comando aumenta a pilha de recursão! tadinho do stack
+  
+  d <- retornaEither
+  let dirVazio = Diretorio "" [] []
+  let diretorio = (retornaDiretorioAtual dirVazio (lerJSON d) caminhoAtual 0 1)
+
+  putStrLn (chamaFuncao diretorio entrada)
+  if entrada == "exit" then (putStrLn ("Tchau")) else mainLoop -- cada comando aumenta a pilha de recursão! tadinho do stack
 
 main :: IO ()
 main = do
@@ -323,12 +335,12 @@ main = do
 -- Nome do diretorio que quer o retorno
 -- nomeDir <- getLine
 -- nomeArq <- getLine
-  idMsg <- readLn :: IO Int
+  idmsg <- readLn :: IO Int
 -- Exemplos de entrada 135.110.60.200 e home // Um por linha
 -- print (retornaSubdiretorio ( (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nome 0))
 -- print (cat (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0) nomeArq)
 -- print (lerJSONM m)
-  putStrLn (retornaConteudoMensagem (retornaMensagem (lerJSONM m) idMsg))
+  putStrLn (retornaConteudoMensagem (retornaMensagem (lerJSONM m) idmsg))
 -- print (retornaNomesArqs (retornaArquivos (retornaDiretorioAtual dirVazio subDirs dirAtual 0 2)) 0)
 -- putStrLn (retornaSaidaLs ["aaaaaaaaaaa", "aaaaaaaaaaa", "aaaaaaaaaaa","aaaaaaaaaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa"] 0) 
 -- help
