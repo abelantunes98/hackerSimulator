@@ -1,11 +1,11 @@
 [
     {
-        "id" : 0,
+        "idM" : 0,
         "mensagem" : "Iniciando HackSimulator..."
     }
     ,
     {
-        "id" : 1,
+        "idM" : 1,
         "mensagem" : "Oi. \n .... \nIsso é bem estranho... tanto pra você quanto pra mim. Eu acho que deveria escrever isso no passado, mesmo que seja difícil admitir que acabou. Meu nome é Hash, e se você está lendo isso, provavelmente eu já esteja morto."
     }
 ]

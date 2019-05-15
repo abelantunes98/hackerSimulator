@@ -25,7 +25,7 @@ data Diretorio =
 -- Objeto que representa um mensagem para ser passada ao
 -- usuario
 data Mensagem =
- Mensagem { id :: !Int,
+ Mensagem { idM :: !Int,
  mensagem :: !String
  } deriving (Show, Generic, Read)
 
@@ -125,6 +125,17 @@ retornaArquivo array nomeEsperado indiceAtual
  | indiceAtual < len array = retornaArquivo array nomeEsperado (indiceAtual + 1) 
  | otherwise = Arquivo "" ""
  where elemento = array !! indiceAtual
+
+retornaMensagem :: [Mensagem] -> Int -> Mensagem
+retornaMensagem [] idIn = (Mensagem 999 "")
+retornaMensagem (h:t) idIn
+ | idM h == idIn = h
+ | otherwise = retornaMensagem t idIn
+
+retornaConteudoMensagem :: Mensagem -> String
+retornaConteudoMensagem msg
+ | idM msg == 999 = "Mensagem Inexiste"
+ | otherwise = mensagem msg
 
 -- Funcao que retorna o diretorio atual a partir da lista que guarda o caminho necessario
 -- para chegar ate ele.
@@ -307,15 +318,16 @@ main = do
 -- lerJSON
  
 -- Ip de um servidor para testar o retorno de um diretorio 
- nome <- getLine
+-- nome <- getLine
 -- Nome do diretorio que quer o retorno
- nomeDir <- getLine
- nomeArq <- getLine
-
+-- nomeDir <- getLine
+-- nomeArq <- getLine
+ idMsg <- readLn :: IO Int
 -- Exemplos de entrada 135.110.60.200 e home // Um por linha
 -- print (retornaSubdiretorio ( (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nome 0))
 -- print (cat (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0) nomeArq)
- print (lerJSONM m)
+-- print (lerJSONM m)
+ putStrLn (retornaConteudoMensagem (retornaMensagem (lerJSONM m) idMsg))
 -- print (retornaNomesArqs (retornaArquivos (retornaDiretorioAtual dirVazio subDirs dirAtual 0 2)) 0)
 -- putStrLn (retornaSaidaLs ["aaaaaaaaaaa", "aaaaaaaaaaa", "aaaaaaaaaaa","aaaaaaaaaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa"] 0) 
 -- help
