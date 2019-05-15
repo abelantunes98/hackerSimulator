@@ -22,23 +22,44 @@ data Diretorio =
  arquivos  ::  ![Arquivo]
  } deriving (Show,Generic, Read)
 
+-- Objeto que representa um mensagem para ser passada ao
+-- usuario
+data Mensagem =
+ Mensagem { id :: !Int,
+ mensagem :: !String
+ } deriving (Show, Generic, Read)
+
 -- Instances to convert our type to/from JSON.
 
 instance FromJSON Diretorio
 instance FromJSON Arquivo
+instance FromJSON Mensagem
 
 -- | Location of the local copy, in case you have it,
 --   of the JSON file.
 jsonFile :: FilePath
 jsonFile = "servidores.json"
 
+-- Location of JSON Mensagens
+jsonFileM :: FilePath
+jsonFileM = "mensagens.json"
+
+-- Json com Diretorios e arquivos
 getJSON :: IO B.ByteString
 getJSON = B.readFile jsonFile
+
+-- Json com mensagens
+getJSONM :: IO B.ByteString
+getJSONM = B.readFile jsonFileM
 
 -- Retorna um Either (Semelhante a promisse de JavaScript)
 -- A partir da leitura do JSON
 retornaEither :: IO (Either String [Diretorio])
 retornaEither = (eitherDecode <$> getJSON) :: IO (Either String [Diretorio])
+
+-- Retorna um Either para mensagens
+retornaEitherM :: IO (Either String [Mensagem])
+retornaEitherM = (eitherDecode <$> getJSONM) :: IO (Either String [Mensagem])
 
 -- Retorna um array de Diretorios
 -- Recebe como parametro a promisse e olha se ela foi executada com exito
@@ -49,6 +70,12 @@ lerJSON entrada =
 
  case entrada of
   Right ps -> ps 
+  Left err -> []
+
+lerJSONM :: Either String [Mensagem] -> [Mensagem]
+lerJSONM entrada =
+ case entrada of
+  Right ps -> ps
   Left err -> []
 
 -- Recebe o Nome de um servidor e a partir da leitura do Json
@@ -239,28 +266,28 @@ cat dir nome
  | otherwise = conteudo arquivo
  where arquivo = retornaArquivo (retornaArquivos dir) nome 0
 
-caseFuncao :: String -> (Diretorio -> String -> String)
+--caseFuncao :: String -> (Diretorio -> String -> String)
 --caseFuncao "cd" = cd
-caseFuncao "cat" = cat
+--caseFuncao "cat" = cat
 --caseFuncao "rm" = rm
 --caseFuncao "ssh" = ssh
 --caseFuncao "connect" = connect
 --caseFuncao "ls" = ls
 
 -- Chama uma das funcoes do sistema de arquivos e retorna o retorno dela.
-chamaFuncao :: String -> String
-chamaFuncao entrada = do
-  let splitted = Data.List.Split.splitOn " " entrada
-  let funcao = caseFuncao (Prelude.head splitted)
-  funcao (Prelude.tail splitted)
+--chamaFuncao :: String -> String
+--chamaFuncao entrada = do
+--  let splitted = Data.List.Split.splitOn " " entrada
+--  let funcao = caseFuncao (Prelude.head splitted)
+--  funcao (Prelude.tail splitted)
 
 -- Loop principal; recebe um comando, executa ele e depois chama a si mesma com um
 -- novo comando.
-play word = do
-  putStrLn word -- comenta essa linha depois
-  line <- getLine :: String
-  chamaFuncao line
-  play line
+--play word = do
+--  putStrLn word -- comenta essa linha depois
+--  line <- getLine :: String
+  --chamaFuncao line
+--  play line
 
 main :: IO ()
 main = do
@@ -269,6 +296,8 @@ main = do
 -- Isso é necessario porque antes desse passo o valor nao eh concreto  
 -- (DETALHE) essa atribuicao x <- y soh pode ser efetuada em um bloco (do)
  d <- retornaEither
+ m <- retornaEitherM
+
  let dirAtual = ["135.110.60.200", "sys"]
  -- Lista com o nome dos arquivos que foram apagado em tuplas com o servidor a 
  -- qual eles pertencem
@@ -286,10 +315,10 @@ main = do
 -- Exemplos de entrada 135.110.60.200 e home // Um por linha
 -- print (retornaSubdiretorio ( (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nome 0))
 -- print (cat (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0) nomeArq)
--- print (lerJSON d)
+ print (lerJSONM m)
 -- print (retornaNomesArqs (retornaArquivos (retornaDiretorioAtual dirVazio subDirs dirAtual 0 2)) 0)
 -- putStrLn (retornaSaidaLs ["aaaaaaaaaaa", "aaaaaaaaaaa", "aaaaaaaaaaa","aaaaaaaaaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa"] 0) 
 -- help
- print (verificaNomeArquivo "ip" dirAtual arquivosApagados)
- print "loop principal..."
- play ""
+-- print (verificaNomeArquivo "ip" dirAtual arquivosApagados)
+-- print "loop principal..."
+-- play ""
