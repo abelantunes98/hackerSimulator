@@ -102,7 +102,7 @@
         [
             {
                 "nomeArq" :"iremos_te_pegar.txt",
-                "conteudo" :"N脙O ADIANTA SE ESCONDER, N脫S IREMOS TE ACHAR! VOC脢 ENTROU NO NOSSO CAMINHO, IREMOS APAGAR VOC脢 E TODOS OS SEUS VEST脥GIOS. YAKUZA N脙O CANSA, N脙O PARA E N脙O TEME."
+                "conteudo" :"NÃO ADIANTA SE ESCONDER, NÓS IREMOS TE ACHAR!\n\nVOCÊ ENTROU NO NOSSO CAMINHO, IREMOS APAGAR VOCÊ E TODOS OS SEUS VESTÍGIOS.\n\nYAKUZA NÃO CANSA, NÃO PARA E NÃO TEME."
             }
         ]
         }
@@ -117,7 +117,7 @@
         [
             {
                 "nomeArq" : "log.txt",
-                "conteudo" : "@455_Connection:_from_143.203.86.254 @456_Connection:_from_143.210.50.200 @457_Connection:_from_135.110.60.200 @458_FileCreate:_by_220.99.134.37_-_file:iremos_te_pegar.txt @459_Connection:_from_135.110.60.200"
+                "conteudo" : "@455_Connection:_from_143.203.86.254\n@456_Connection:_from_143.210.50.200\n@457_Connection:_from_135.110.60.200\n@458_FileCreate:_by_220.99.134.37_-_file:iremos_te_pegar.txt\n@459_Connection:_from_135.110.60.200\n"
             }
         ]
         }
