@@ -6,31 +6,51 @@
     ,
     {
         "idm" : 1,
-        "mensagem" : "Oi.\n ....\nIsso é bem estranho... tanto pra você quanto pra mim.\nEu acho que deveria escrever isso no passado, mesmo que seja difícil admitir que\nacabou.\nMeu nome é Hash, e se você está lendo isso, provavelmente eu já esteja morto."
+        "mensagem" : "Oi.\n ....\nIsso é bem estranho... tanto pra você quanto pra mim.\nEu acho que deveria escrever isso no passado, mesmo que seja difícil admitir que\nacabou.\nMeu nome é Hash, e se você está lendo isso, provavelmente eu já esteja morto.\n"
     }
     ,
     {
         "idm" : 2,
-        "mensagem" : "E-mail:\nde: 4jud3m3@  volta o que tava aqui que ja alterei\npara: xxxxxxxxxxxxxx\n\nOi estranho... não nos conhecemos, mas se você recebeu esse email é porque eu já estou morto. Essa mensagem estava programada para ser enviada pelo servidor após ele passar 14 dias sem que eu conseguisse logar. Bom, parece que isso realmente aconteceu.\n\nSei que isso parece maluco, mas você a única pessoa que posso confiar nesse momento, preciso de sua ajuda. Você tá dentro? Se estiver a fim, entra no IP xxx.xxx.xx.xx, esse é meu servidor. Pega o último log, pois esse log provavelmente é de quem me queria fora da jogada. Mas muito cuidado, não quero que você acabe com eu.\n\n\nignorar ou aceitar?"
+        "mensagem" : "E-mail:\n\tde: 4jud3m3@  volta o que tava aqui que ja alterei\n\tpara: xxxxxxxxxxxxxx\n\n\tOi estranho... não nos conhecemos, mas se você recebeu esse email é porque eu\n já estou morto. Essa mensagem estava programada para ser enviada pelo servidor após\n ele passar 14 dias sem que eu conseguisse logar. Bom, parece que isso realmente\n aconteceu.\n\n\tSei que isso parece maluco, mas você a única pessoa que posso confiar nesse\n momento, preciso de sua ajuda. Você tá dentro? Se estiver a fim, entra no IP\n xxx.xxx.xx.xx, esse é meu servidor. Pega o último log, pois esse log provavelmente é de\n quem me queria fora da jogada. Mas muito cuidado, não quero que você acabe com eu.\n\n\nignorar ou aceitar?\n"
     }
     ,
     {
         "idm" : 3,
-        "mensagem" : "E-mail (aceito)\n\nObrigado por aceitar, isso mostra que tens determinação.\n\nOK, vamos parar de conversas e partir para a ação:\n\nExecute o programa que foi enviado para sua pasta /home, ele auxiliará você nos próximos passos.\n\n*Lembre-se que para executar um programa basta digitar ./nome_do_programa"
+        "mensagem" : "E-mail (aceito)\n\n\tObrigado por aceitar, isso mostra que tens determinação.\n\nOK, vamos parar de conversas e partir para a ação:\n\tExecute o programa que foi enviado para sua pasta /home, ele auxiliará você nos próximos passos.\n\n\t*Lembre-se que para executar um programa basta digitar ./nome_do_programa\n"
     }
     ,
     {
         "idm" : 4,
-        "mensagem" : "HACKNET\n\npressione a tecla ENTER para continuar..."
+        "mensagem" : "HACKNET\n\npressione a tecla ENTER para continuar...\n"
     }
     ,
     {
         "idm" : 5,
-        "mensagem" : "Dica: Digite no terminal o comando “connect [ip]”, sem as aspas, e trocando o trecho [ip], pelo número ip da minha maquina “112.84.211.124”. Para assim se conectar a minha máquina."
+        "mensagem" : "Dica: Digite no terminal o comando connect [ip], sem as aspas, e trocando o trecho [ip],\npelo número ip da minha máquina, que é 112.84.211.124. Para assim se conectar a minha\nmáquina.\n"
     }
     ,
     {
         "idm" : 6,
-        "mensagem" : "HACKNET: procure no meu sistema de arquivos vestígios. Procure por mensagens que possam ter deixado em meu PC por alguma pasta, e principalmente você tem que achar algum IP diferente do meu e do seu, na pasta de LOGs do sistema de arquivos. Para ver o conteúdo das pastas use o comando “ls”. Para entrar e sair das pastas, use o comando “cd”. Encontrando o ip, não esqueça de anotar, pois no final ao olhar tudo dos meus arquivos, você deve apagar todos os ip’s da pasta LOG para evitar que lhe achem. Para desconectar do servidor, é só usar o comando “dc”."
+        "mensagem" : "HACKNET: procure no meu sistema de arquivos vestígios. Procure por mensagens que\npossam ter deixado em meu PC por alguma pasta, e principalmente você tem que achar\nalgum IP diferente do meu e do seu, na pasta de LOGs do sistema de arquivos. Para ver o\nconteúdo das pastas use o comando ls. Para entrar e sair das pastas, use o comandon\ncd. Encontrando o ip, não esqueça de anotar, pois no final ao olhar tudo dos meus\narquivos, você deve apagar todos os ip's da pasta LOG para evitar que lhe achem. Para\ndesconectar do servidor, é só usar o comando dc.\n"
+    }
+    ,
+    {
+        "idm" : 7,
+        "mensagem" : "HACKNET: Agora que você provavelmente já deve saber o que deve ter acontecido\ncomigo, e pistas de encontrar quem foi, irei lhe dar um presente. Se conecte a uma máquina\nzumbi, que é uma máquina que é usada remotamente sem o dono saber, e baixe o arquivo\nSSHCrack, dentro da pasta /bin. Para isso, use o comando scp, que baixará o arquivo para\no diretório home da sua máquina.\n\nDepois de baixo, de o comando cp em sua home para a pasta /bin, ou o comando mv para\nmover o arquivo da sua pasta home para a pasta /bin.\n\nO IP da máquina zumbi é 150.189.56.65\n\nQuando tiver terminado, de o comando hacknet no terminal de sua máquina, que faremos o\npróximo passo.\n"
+    }
+    ,
+    {
+        "idm" : 8,
+        "mensagem" : "HACKNET: Com grandes poderes vem grandes responsabilidades. Você agora tem uma\ndas melhores ferramentas para abertura de portas de um ip, para poder se conectar\nremotamente a máquina. O uso da ferramenta consiste em executar a ferramenta\n./nome_da_ferramenta IP, onde se coloca o nome da ferramenta, e o IP que terá as portas\natacadas para liberar acesso, separado por um espaço em branco.\n"
+    }
+    ,
+    {
+        "idm" : 9,
+        "mensagem" : "HACKNET: ALERTA! Novo IP 220.99.134.37 conectado! Essa ferramenta foi feita para\nacionamento da polícia em novos IPs acessados! Você deseja que todos os dados dessa\nmáquina seja enviado à polícia? (sim / nao)\n"
+    }
+    ,
+    {
+        "idm" : 10,
+        "mensagem" : "Oi.\nMeu nome é Hash, e se você está lendo isso, eu já estou morto.\n\nIsso também significa que você os parou.\nO que significa que terminamos.\nO que significa que você conseguiu.\nFazer isso agora foi a nossa última chance, eu acho.\nEntão ... obrigado\nObrigado mesmo\nSe tudo deu certo, há apenas uma cópia do Hacknet para deletar.\ne você está olhando para ele.\n\nÉ assim que termina, Você ajudou muito e sou grato.\n\n- Hash"
     }
 ]
