@@ -323,6 +323,7 @@ formataCaminhoAtual (h:t) = h ++ "/" ++ (formataCaminhoAtual t)
 -- Retorno: Saida da funcao desejada
 chamaFuncao :: String -> Diretorio -> String -> [String] -> [(String,String)] -> String
 chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados
+ | funcao == "" = ""
  | funcao == "ls" = ls diretorio dirAtual arquivosApagados
  | funcao == "cat" = cat diretorio arquivo dirAtual arquivosApagados
  | funcao == "connect" = do
