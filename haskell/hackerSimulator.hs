@@ -8,6 +8,7 @@ import GHC.Generics
 import GHC.Read
 import Help
 import Data.List.Split
+import System.Console.ANSI
 
 -- Tupla para representar um arquivo
 data Arquivo =
@@ -324,6 +325,7 @@ formataCaminhoAtual (h:t) = h ++ "/" ++ (formataCaminhoAtual t)
 chamaFuncao :: String -> Diretorio -> String -> [String] -> [(String,String)] -> String
 chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados
  | funcao == "" = ""
+ | funcao == "clear" = ""
  | funcao == "ls" = ls diretorio dirAtual arquivosApagados
  | funcao == "cat" = cat diretorio arquivo dirAtual arquivosApagados
  | funcao == "connect" = do
@@ -339,65 +341,46 @@ chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados
  | funcao == "exit" = "Terminando programa..."
  | funcao == "disconnect" = do
   if (arquivo /= "") then ("A funcao Disconnect nao precisa de parametros.") else (disconnect dirAtual)
- | otherwise = "Comando desconhecido: " ++ funcao -- TROCAR ESSE TEXTO POR ALGO MAIS BONITINHO
+ | otherwise = "Comando desconhecido: " ++ funcao
 
 -- Loop principal; recebe um comando, executa ele e depois chama a si mesma com um
 -- novo comando.
-mainLoop dirAtual arquivosApagados = do
+mainLoop dirAtual arquivosApagados estadoAtual = do
   d <- retornaEither
+  m <- retornaEitherM
+  
   let dirVazio = Diretorio "" [] []
   let diretorio = (retornaDiretorioAtual dirVazio (lerJSON d) dirAtual 0 (len dirAtual))
   
+  let mensagemRecebida = retornaConteudoMensagem (retornaMensagem (lerJSONM m) estadoAtual)
+  
+  --putStrLn mensagemRecebida --only if mensagem nova
+  
   putStr ("root@" ++ (formataCaminhoAtual dirAtual) ++ ":>> ")
-
+  
   entrada <- getLine
   let splitted = Data.List.Split.splitOn " " entrada
   let nomeFuncao = Prelude.head splitted
   let nomeArquivo = if (len splitted > 1) then Prelude.head (Prelude.tail splitted) else ""
-
+  
   let resultChamaFuncao = (chamaFuncao nomeFuncao diretorio nomeArquivo dirAtual arquivosApagados)
   if (resultChamaFuncao == "") then (putStr "") else (putStrLn resultChamaFuncao)  
-
+  
   let resultadoTroca = (if nomeFuncao == "cd" then (cd nomeArquivo diretorio dirAtual) else (if nomeFuncao == "connect" then (connect nomeArquivo) else (if (nomeFuncao == "disconnect") then (["135.110.60.200", "home"]) else dirAtual)))
   let novoDirAtual = if (Prelude.head resultadoTroca == "erro") then dirAtual else resultadoTroca
-
-  let saidaRm = if (nomeFuncao == "rm") then (rm diretorio nomeArquivo arquivosApagados dirAtual) else (arquivosApagados)
-  let novosArquivosApagados = if (saidaRm /= [("erro", "")]) then (saidaRm) else (arquivosApagados)
   
-  if entrada == "exit" then (putStr "") else mainLoop novoDirAtual novosArquivosApagados -- cada comando aumenta a pilha de recursão! tadinho do stack
+  let saidaRm = if nomeFuncao == "rm" then rm diretorio nomeArquivo arquivosApagados dirAtual else arquivosApagados
+  let novosArquivosApagados = if saidaRm /= [("erro", "")] then saidaRm else arquivosApagados
+  
+  if nomeFuncao == "clear" then clearScreen else (putStr "")
+
+  let novoEstadoAtual = estadoAtual + 1
+  
+  if entrada == "exit" then (putStr "") else mainLoop novoDirAtual novosArquivosApagados novoEstadoAtual -- cada comando aumenta a pilha de recursão! tadinho do stack
 
 main :: IO ()
 main = do
-  -- d recebe o valor do retorno da funcao retornaEither
-  -- Isso é necessario porque antes desse passo o valor nao eh concreto  
-  -- (DETALHE) essa atribuicao x <- y soh pode ser efetuada em um bloco (do)
-  d <- retornaEither
-  m <- retornaEitherM
-  
   let dirAtual = ["135.110.60.200", "home"]
-  -- Lista com o nome dos arquivos que foram apagado em tuplas com o servidor a 
-  -- qual eles pertencem
   let arquivosApagados = [("135.110.60.200", "i"),("","")]
 
--- Depois que o valor torna-se concreto pode ser passado como parametro na funcao 
--- lerJSON
-
--- Ip de um servidor para testar o retorno de um diretorio 
--- nome <- getLine
--- Nome do diretorio que quer o retorno
--- nomeDir <- getLine
--- nomeArq <- getLine
-  idmsg <- readLn :: IO Int
--- Exemplos de entrada 135.110.60.200 e home // Um por linha
--- print (retornaSubdiretorio ( (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nome 0))
--- print (cat (retornaSubdiretorio (retornaSubdiretorios (retornaServidor (lerJSON d) nome)) nomeDir 0) nomeArq)
--- print (lerJSONM m)
-  putStrLn (retornaConteudoMensagem (retornaMensagem (lerJSONM m) idmsg))
--- print (retornaNomesArqs (retornaArquivos (retornaDiretorioAtual dirVazio subDirs dirAtual 0 2)) 0)
--- putStrLn (retornaSaidaLs ["aaaaaaaaaaa", "aaaaaaaaaaa", "aaaaaaaaaaa","aaaaaaaaaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa","aaa"] 0) 
--- help
--- print (verificaNomeArquivo "ip" dirAtual arquivosApagados)
--- print "loop principal..."
--- play ""
-  print "loop principal..."
-  mainLoop dirAtual arquivosApagados
+  mainLoop dirAtual arquivosApagados 0
