@@ -88,7 +88,7 @@ lerJSONM entrada =
 retornaServidor :: [Diretorio] -> String -> Diretorio
 retornaServidor [a, b, c, d, e] nome 
  | nome == "135.110.60.200" = a
- | nome == "112.84.211.1240" = b
+ | nome == "112.84.211.124" = b
  | nome == "150.189.56.65" = c
  | nome == "220.99.134.37" = d
  | otherwise = e
@@ -278,7 +278,7 @@ ls dir dirAtual apagados = retornaSaidaLs (ordenaLista ( (retornaNomesArqs (reto
 -- lista vazia
 connect :: String -> [String]
 connect "135.110.60.200" = ["135.110.60.200", "home"]
-connect "112.84.211.1240" = ["112.84.211.1240", "home"]
+connect "112.84.211.124" = ["112.84.211.124", "home"]
 connect "150.189.56.65" = ["150.189.56.65", "home"]
 connect "220.99.134.37" = ["220.99.134.37"]
 connect outro = ["erro"]
@@ -322,12 +322,13 @@ formataCaminhoAtual (h:t) = h ++ "/" ++ (formataCaminhoAtual t)
 -- Funcao que recebe a entrada do usuario, identifica qual o comando desejado e seus atributos
 -- Parametros: Funcao DiretorioAtual Parametro CamihoDirAtual ArquivosApagados
 -- Retorno: Saida da funcao desejada
-chamaFuncao :: String -> Diretorio -> String -> [String] -> [(String,String)] -> String
-chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados
+chamaFuncao :: String -> Diretorio -> String -> [String] -> [(String,String)] -> String -> String
+chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados mensagem
  | funcao == "" = ""
  | funcao == "clear" = ""
  | funcao == "ls" = ls diretorio dirAtual arquivosApagados
  | funcao == "cat" = cat diretorio arquivo dirAtual arquivosApagados
+ | funcao == "getmessage" = mensagem
  | funcao == "connect" = do
   let resultadoConnect = connect arquivo
   if (Prelude.head resultadoConnect == "erro") then "Informe um Host válido." else "Connecting to " ++ Prelude.head (connect arquivo) ++ "..."
@@ -343,44 +344,81 @@ chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados
   if (arquivo /= "") then ("A funcao Disconnect nao precisa de parametros.") else (disconnect dirAtual)
  | otherwise = "Comando desconhecido: " ++ funcao
 
+retornaNovaMensagem :: String -> Int -> Int
+retornaNovaMensagem "connect 112.84.211.124" 4 = 5
+retornaNovaMensagem "disconnect" 5 = 6
+retornaNovaMensagem "connect 150.189.56.65" 6 = 7
+retornaNovaMensagem "SSHINTERPOL 220.99.134.37" 7 = 8
+
+retornaNovaMensagem entrada idMens = idMens
+
+-- Espera digitar um Enter para mudar a mensagem
+esperaEnter :: IO ()
+esperaEnter = do 
+ putStr "\nDigite Enter para continuar..."
+ getLine
+ putStr ""
+
 -- Loop principal; recebe um comando, executa ele e depois chama a si mesma com um
 -- novo comando.
-mainLoop dirAtual arquivosApagados estadoAtual = do
+mainLoop dirAtual arquivosApagados idMsg jaImprimiuMsg = do
   d <- retornaEither
   m <- retornaEitherM
   
   let dirVazio = Diretorio "" [] []
   let diretorio = (retornaDiretorioAtual dirVazio (lerJSON d) dirAtual 0 (len dirAtual))
   
-  let mensagemRecebida = retornaConteudoMensagem (retornaMensagem (lerJSONM m) estadoAtual)
+  let mensagemRecebida = retornaConteudoMensagem (retornaMensagem (lerJSONM m) idMsg)
   
-  --putStrLn mensagemRecebida --only if mensagem nova
+  if (not jaImprimiuMsg) then putStrLn mensagemRecebida else (putStr "")
   
   putStr ("root@" ++ (formataCaminhoAtual dirAtual) ++ ":>> ")
   
   entrada <- getLine
+  
+  let idMensagem = retornaNovaMensagem entrada idMsg
+  --if (idMensagem /= idMsg) then (putStrLn (retornaConteudoMensagem (retornaMensagem (lerJSONM m) idMensagem))) else (putStr "") 
   let splitted = Data.List.Split.splitOn " " entrada
   let nomeFuncao = Prelude.head splitted
   let nomeArquivo = if (len splitted > 1) then Prelude.head (Prelude.tail splitted) else ""
   
-  let resultChamaFuncao = (chamaFuncao nomeFuncao diretorio nomeArquivo dirAtual arquivosApagados)
+  let resultChamaFuncao = (chamaFuncao nomeFuncao diretorio nomeArquivo dirAtual arquivosApagados mensagemRecebida)
   if (resultChamaFuncao == "") then (putStr "") else (putStrLn resultChamaFuncao)  
   
-  let resultadoTroca = (if nomeFuncao == "cd" then (cd nomeArquivo diretorio dirAtual) else (if nomeFuncao == "connect" then (connect nomeArquivo) else (if (nomeFuncao == "disconnect") then (["135.110.60.200", "home"]) else dirAtual)))
+  let resultadoTroca = (if nomeFuncao == "cd" then (cd nomeArquivo diretorio dirAtual) else (if nomeFuncao == "connect" then (connect nomeArquivo) else (if (nomeFuncao == "disconnect") then (if (dirAtual !! 0 /= "135.110.60.200") then ["135.110.60.200", "home"] else (dirAtual) ) else dirAtual)))
+ 
   let novoDirAtual = if (Prelude.head resultadoTroca == "erro") then dirAtual else resultadoTroca
   
   let saidaRm = if nomeFuncao == "rm" then rm diretorio nomeArquivo arquivosApagados dirAtual else arquivosApagados
   let novosArquivosApagados = if saidaRm /= [("erro", "")] then saidaRm else arquivosApagados
   
   if nomeFuncao == "clear" then clearScreen else (putStr "")
-
-  let novoEstadoAtual = estadoAtual + 1
   
-  if entrada == "exit" then (putStr "") else mainLoop novoDirAtual novosArquivosApagados novoEstadoAtual -- cada comando aumenta a pilha de recursão! tadinho do stack
+  let novoJaImprimiuMsg = idMensagem == idMsg
+  if entrada == "exit" then (putStr "") else mainLoop novoDirAtual novosArquivosApagados idMensagem novoJaImprimiuMsg -- cada comando aumenta a pilha de recursão! tadinho do stack
 
 main :: IO ()
 main = do
-  let dirAtual = ["135.110.60.200", "home"]
-  let arquivosApagados = [("135.110.60.200", "i"),("","")]
+  
+ d <- retornaEither
+ m <- retornaEitherM
+ 
+ let dirAtual = ["135.110.60.200", "home"]
+ let arquivosApagados = [("135.110.60.200", "i"),("","")]
 
-  mainLoop dirAtual arquivosApagados 0
+ putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 0))
+ esperaEnter
+  
+ putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 1))
+ esperaEnter
+
+ putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 2))
+ esperaEnter
+ 
+ putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 3))
+ esperaEnter
+
+ putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 4))
+ esperaEnter
+
+ mainLoop dirAtual arquivosApagados 4 True
