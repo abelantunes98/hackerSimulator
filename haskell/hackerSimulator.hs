@@ -266,7 +266,8 @@ retornaSaidaLs :: [String] -> Int -> [String] -> [(String, String)] -> String
 retornaSaidaLs [] cont dirAtual apagados= ""
 retornaSaidaLs (h:t) cont dirAtual apagados
  | cont < 8  && (verificaNomeArquivo h dirAtual apagados) = h ++ " " ++ retornaSaidaLs t (cont + 1) dirAtual apagados
- | otherwise = "\n" ++ retornaSaidaLs t 0 dirAtual apagados
+ | cont == 8 = "\n" ++ retornaSaidaLs t 0 dirAtual apagados
+ | otherwise = ""
 
 -- Funcao ls - Recebe um dirtorio e retorna seus subdiretorios e seus arquivos 
 -- em ordem alfabetica
@@ -283,6 +284,7 @@ connect "150.189.56.65" = ["150.189.56.65", "home"]
 connect "220.99.134.37" = ["220.99.134.37"]
 connect outro = ["erro"]
 
+-- Funcao usada para se desconectar de um servidor remoto
 disconnect :: [String] -> String
 disconnect lista
  | servidor == "135.110.60.200" = "Você não está conectado a um servidor remoto."
@@ -312,6 +314,16 @@ rm dir nomeArquivo apagados dirAtual
   arquivo = (retornaArquivo (retornaArquivos dir) nomeArquivo 0)
   servidor = (dirAtual !! 0)
 
+-- Comando que aciona a policia, caso exista provas de um crime contra o proprietario
+-- do IP informado.
+sshinterpol :: String -> [String] -> [(String,String)] -> String
+sshinterpol ip dirAtual apagados
+ | ip == "220.99.134.37" && (dirAtual !! 0) == "150.189.56.65" = ""
+ | (dirAtual !! 0) /= "150.189.56.65" || (not (listaNaoPossui apagados ("150.189.56.65","sshinterpol"))) = "Comando desconhecido: sshinterpol"
+ | ip == "" = "Você precisa informar um IP como parâmetro."
+ | listaNaoPossui ["220.99.134.37", "150.189.56.65", "112.84.211.124", "135.110.60.200", "localhost"] ip = "HostName não encontrado: " ++ ip
+ | otherwise = "Você não pode denunciar alguém sem provas!"
+
 -- Funcao que formata o caminho atual do usuario para exibir no console
 -- Parametros: CaminhoDirAtual
 -- Saida: CamihoDirAtual formatado
@@ -329,12 +341,13 @@ chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados mensagem
  | funcao == "ls" = ls diretorio dirAtual arquivosApagados
  | funcao == "cat" = cat diretorio arquivo dirAtual arquivosApagados
  | funcao == "getmessage" = mensagem
+ | funcao == "sshinterpol" = sshinterpol arquivo dirAtual arquivosApagados
  | funcao == "connect" = do
   let resultadoConnect = connect arquivo
   if (Prelude.head resultadoConnect == "erro") then "Informe um Host válido." else "Connecting to " ++ Prelude.head (connect arquivo) ++ "..."
  | funcao == "cd" = do
   let resultadoCd = cd arquivo diretorio dirAtual
-  if (Prelude.head resultadoCd == "erro") then "mensagem de erro" else ""
+  if (Prelude.head resultadoCd == "erro") then ("Diretorio não encontrado: " ++ arquivo) else ""
  | funcao == "rm" = do
   let resultadoRm = rm diretorio arquivo arquivosApagados dirAtual
   if (resultadoRm == [("erro", "")]) then "Digite um nome de arquivo valido apos o RM." else if (resultadoRm == arquivosApagados) then "Informe o nome de um arquivo para apagar." else ""
@@ -344,13 +357,14 @@ chamaFuncao funcao diretorio arquivo dirAtual arquivosApagados mensagem
   if (arquivo /= "") then ("A funcao Disconnect nao precisa de parametros.") else (disconnect dirAtual)
  | otherwise = "Comando desconhecido: " ++ funcao
 
-retornaNovaMensagem :: String -> Int -> Int
-retornaNovaMensagem "connect 112.84.211.124" 4 = 5
-retornaNovaMensagem "disconnect" 5 = 6
-retornaNovaMensagem "connect 150.189.56.65" 6 = 7
-retornaNovaMensagem "SSHINTERPOL 220.99.134.37" 7 = 8
-
-retornaNovaMensagem entrada idMens = idMens
+retornaNovaMensagem :: String -> Int -> [(String, String)] -> Int
+retornaNovaMensagem "connect 112.84.211.124" 4 apagados = 5
+retornaNovaMensagem "disconnect" 5 apagados = 6
+retornaNovaMensagem "connect 150.189.56.65" 6 apagados = 7
+retornaNovaMensagem "sshinterpol 220.99.134.37" 7 apagados = 8
+retornaNovaMensagem "disconnect" 8 apagados = do
+ if ((listaNaoPossui apagados ("112.84.211.124", "log.txt")) || (listaNaoPossui apagados ("150.189.56.65", "log.txt"))) then 10 else 9
+retornaNovaMensagem entrada idMens apagados= idMens
 
 -- Espera digitar um Enter para mudar a mensagem
 esperaEnter :: IO ()
@@ -376,8 +390,7 @@ mainLoop dirAtual arquivosApagados idMsg jaImprimiuMsg = do
   
   entrada <- getLine
   
-  let idMensagem = retornaNovaMensagem entrada idMsg
-  --if (idMensagem /= idMsg) then (putStrLn (retornaConteudoMensagem (retornaMensagem (lerJSONM m) idMensagem))) else (putStr "") 
+  let idMensagem = retornaNovaMensagem entrada idMsg arquivosApagados 
   let splitted = Data.List.Split.splitOn " " entrada
   let nomeFuncao = Prelude.head splitted
   let nomeArquivo = if (len splitted > 1) then Prelude.head (Prelude.tail splitted) else ""
