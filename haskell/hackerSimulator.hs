@@ -318,7 +318,7 @@ rm dir nomeArquivo apagados dirAtual
 -- do IP informado.
 sshinterpol :: String -> [String] -> [(String,String)] -> String
 sshinterpol ip dirAtual apagados
- | ip == "220.99.134.37" && (dirAtual !! 0) == "150.189.56.65" = ""
+ | ip == "220.99.134.37" && (dirAtual !! 0) == "150.189.56.65" && (listaNaoPossui apagados ("150.189.56.65", "sshinterpol")) = ""
  | (dirAtual !! 0) /= "150.189.56.65" || (not (listaNaoPossui apagados ("150.189.56.65","sshinterpol"))) = "Comando desconhecido: sshinterpol"
  | ip == "" = "Você precisa informar um IP como parâmetro."
  | listaNaoPossui ["220.99.134.37", "150.189.56.65", "112.84.211.124", "135.110.60.200", "localhost"] ip = "HostName não encontrado: " ++ ip
