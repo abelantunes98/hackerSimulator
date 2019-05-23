@@ -361,7 +361,8 @@ retornaNovaMensagem :: String -> Int -> [(String, String)] -> Int
 retornaNovaMensagem "connect 112.84.211.124" 4 apagados = 5
 retornaNovaMensagem "disconnect" 5 apagados = 6
 retornaNovaMensagem "connect 150.189.56.65" 6 apagados = 7
-retornaNovaMensagem "sshinterpol 220.99.134.37" 7 apagados = 8
+retornaNovaMensagem "sshinterpol 220.99.134.37" 7 apagados = do
+ if (listaNaoPossui apagados ("150.189.56.65", "sshinterpol")) then 8 else 7
 retornaNovaMensagem "disconnect" 8 apagados = do
  if ((listaNaoPossui apagados ("112.84.211.124", "log.txt")) || (listaNaoPossui apagados ("150.189.56.65", "log.txt"))) then 10 else 9
 retornaNovaMensagem entrada idMens apagados= idMens
