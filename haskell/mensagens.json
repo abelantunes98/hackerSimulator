@@ -18,7 +18,7 @@
         "idm" : 3,
         "mensagem" : "\nOK, vamos parar de conversas e partir para a ação.\n"
     },
-    
+
     {
         "idm" : 4,
         "mensagem" : "\nDica: Digite no terminal o comando connect [ip], trocando o trecho [ip],\npelo número ip da minha máquina, que é 112.84.211.124. Para assim se conectar a minha\nmáquina.\n"
@@ -50,7 +50,22 @@
     },
 
     {
-	"idm" : 10,
-	"mensagem" : "\nHuum... Você conseguiu chamar a polícia, mas esqueceu seu log em algumas máquinas... Logo será o próximo...\n"
-    }
+	     "idm" : 10,
+	     "mensagem" : "\nHuum... Você conseguiu chamar a polícia, mas esqueceu seu log em algumas máquinas... Logo será o próximo...\n"
+    },
+
+    {
+      "idm" : 11,
+      "mensagem" : "\n  _    _                  _                       _____   _                       _           _
+ | |  | |                | |                     / ____| (_)                     | |         | |                 \n
+ | |__| |   __ _    ___  | | __   ___   _ __    | (___    _   _ __ ___    _   _  | |   __ _  | |_    ___    _ __ \n
+ |  __  |  / _` |  / __| | |/ /  / _ \\ | '__|    \\___ \\  | | | '_ ` _ \\  | | | | | |  / _` | | __|  / _ \\  | '__|\n
+ | |  | | | (_| | | (__  |   <  |  __/ | |       ____) | | | | | | | | | | |_| | | | | (_| | | |_  | (_) | | |   \n
+ |_|  |_|  \\__,_|  \\___| |_|\\_\\  \\___| |_|      |_____/  |_| |_| |_| |_|  \\__,_| |_|  \\__,_|  \\__|  \\___/  |_|\n\n1. Jogar\n2. Créditos\n3. Sair\n\nDigite uma opção para continuar: "
+   },
+
+   {
+     "idm" : 12,
+     "mensagem" : "\n\n    Alunos:\n            Abel Antunes de Lima Neto\n            Igor Santa Ritta Seabra\n            José Guilherme Coelho de Oliveira\n            Siuanny Barbosa dos Santos Rocha\n            Victor Paz de Farias Braga\n            Wesley Roseno Saraiva\n\n    Projeto desenvolvido para a disciplina de Paradigmas de Linguagem de Programação @UFCG\n\n"
+   }
 ]

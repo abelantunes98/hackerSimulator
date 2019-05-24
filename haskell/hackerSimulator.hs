@@ -67,10 +67,10 @@ retornaEitherM = (eitherDecode <$> getJSONM) :: IO (Either String [Mensagem])
 -- quando executada com exito retorna estah direita ou Right
 -- Se estiver em Left, estah com erro
 lerJSON :: Either String [Diretorio] -> [Diretorio]
-lerJSON entrada = 
+lerJSON entrada =
 
  case entrada of
-  Right ps -> ps 
+  Right ps -> ps
   Left err -> []
 
 -- Retorna uma lista de mensagens a partir da leitura do JSON de mensagens
@@ -86,7 +86,7 @@ lerJSONM entrada =
 -- Caso seja adicionado outros, deve modificar a funcao
 -- pois ela itera por um numero especifico de elementos em um array
 retornaServidor :: [Diretorio] -> String -> Diretorio
-retornaServidor [a, b, c, d, e] nome 
+retornaServidor [a, b, c, d, e] nome
  | nome == "135.110.60.200" = a
  | nome == "112.84.211.124" = b
  | nome == "150.189.56.65" = c
@@ -107,7 +107,7 @@ len [] = 0
 len (h:t) = 1 + len t
 
 -- Recebe o nome de um subdiretorio desejado e  o array de
--- subdiretorios do diretorio atual se o subdiretorio 
+-- subdiretorios do diretorio atual se o subdiretorio
 -- estiver presente no diretorio atual, retorna ele
 -- Esse array de Diretorios pode ser obtido pelo retorno da funcao
 -- retornaSubdiretorios -- Se nao houver o subdiretorio retorna um diretorio vazio
@@ -115,7 +115,7 @@ retornaSubdiretorio :: [Diretorio] -> String -> Int -> Diretorio
 retornaSubdiretorio array nomeEsperado indiceAtual
  | indiceAtual < len array && ((nome elemento) == nomeEsperado) = elemento
  | indiceAtual < len array = retornaSubdiretorio array nomeEsperado (indiceAtual + 1)
- | otherwise = Diretorio "" [] []  
+ | otherwise = Diretorio "" [] []
  where elemento = array !! indiceAtual
 
 -- Recebe o nome de um arquivo e o array de arquivos do diretorio atual, se o arquivo estiver presente
@@ -124,7 +124,7 @@ retornaSubdiretorio array nomeEsperado indiceAtual
 retornaArquivo :: [Arquivo] -> String -> Int -> Arquivo
 retornaArquivo array nomeEsperado indiceAtual
  | indiceAtual < len array && ((nomeArq elemento) == nomeEsperado) = elemento
- | indiceAtual < len array = retornaArquivo array nomeEsperado (indiceAtual + 1) 
+ | indiceAtual < len array = retornaArquivo array nomeEsperado (indiceAtual + 1)
  | otherwise = Arquivo "" ""
  where elemento = array !! indiceAtual
 
@@ -151,22 +151,22 @@ retornaConteudoMensagem msg
 -- ela ira acessar os diretorios recursivamente ateh chegar no ultimo nome de diretorio da lista
 -- que serah o que o usuario estarah no momento
 
-retornaDiretorioAtual :: Diretorio -> [Diretorio] -> [String] -> Int -> Int -> Diretorio 
+retornaDiretorioAtual :: Diretorio -> [Diretorio] -> [String] -> Int -> Int -> Diretorio
 retornaDiretorioAtual dir subdirs nomes 0 num
- 
+
  | num > 1 = do
   let servidor = retornaServidor subdirs (nomes !! 0)
   let subDirsServ = retornaSubdiretorios servidor
   retornaDiretorioAtual servidor subDirsServ nomes 1 (num - 1)
- 
+
  | otherwise = retornaServidor subdirs (nomes !! 0)
 
 retornaDiretorioAtual dir subdirs nomes indice 1 = do
  retornaSubdiretorio subdirs (nomes !! indice) 0
- 
+
 retornaDiretorioAtual dir subdirs nomes indice num = do
- let subdir = retornaSubdiretorio subdirs (nomes !! (indice)) 0 
- retornaDiretorioAtual subdir (retornaSubdiretorios subdir) nomes (indice + 1) (num - 1) 
+ let subdir = retornaSubdiretorio subdirs (nomes !! (indice)) 0
+ retornaDiretorioAtual subdir (retornaSubdiretorios subdir) nomes (indice + 1) (num - 1)
 
 -- Funcao que inverte um boolean
 notA :: Bool -> Bool
@@ -220,12 +220,12 @@ verificaNomeArquivo :: String -> [String] -> [(String, String)] -> Bool
 verificaNomeArquivo nome dirAtual apagados
  | listaNaoPossui apagados (servidor, nome) = True
  | otherwise = False
- where servidor = (dirAtual !! 0) 
+ where servidor = (dirAtual !! 0)
 
 -- Funcao que retorna o nome dos subdiretorios de um local
 -- usada para a funcao ls
 retornaNomesDirs :: [Diretorio] -> Int -> [String]
-retornaNomesDirs subs indice 
+retornaNomesDirs subs indice
  | len subs == 0 = []
  | indice == ((len subs) - 1) = [nome (subs !! indice)]
  | otherwise = [nome (subs !! indice)] ++ retornaNomesDirs subs (indice + 1)
@@ -233,7 +233,7 @@ retornaNomesDirs subs indice
 -- Funcao qoe retorna os nomes dos arquivos de um local, usada
 -- na funcao ls
 retornaNomesArqs :: [Arquivo] -> Int -> [String]
-retornaNomesArqs arqs indice 
+retornaNomesArqs arqs indice
  | len arqs == 0 = []
  | indice == ((len arqs) - 1) = [nomeArq (arqs !! indice)]
  | otherwise = [nomeArq (arqs !! indice)] ++ retornaNomesArqs arqs (indice + 1)
@@ -242,7 +242,7 @@ retornaNomesArqs arqs indice
 -- usada no insertion sort
 menorLista :: (Ord l) => [l] -> l
 menorLista [x] = x
-menorLista (h:t) 
+menorLista (h:t)
  | h <= menorLista t = h
  | otherwise = menorLista t
 
@@ -251,7 +251,7 @@ removeDaLista :: (Ord l) => [l] -> l -> [l]
 removeDaLista [] elem= []
 removeDaLista (h:t) elem
  | h == elem = t
- |otherwise = [h] ++ removeDaLista t elem 
+ |otherwise = [h] ++ removeDaLista t elem
 
 -- Funcao que ordena uma lista por meio de um insertion sort
 -- pode usar para qualquer lista de elementos ordenaveis
@@ -269,12 +269,12 @@ retornaSaidaLs (h:t) cont dirAtual apagados
  | cont == 8 = "\n" ++ retornaSaidaLs t 0 dirAtual apagados
  | otherwise = ""
 
--- Funcao ls - Recebe um dirtorio e retorna seus subdiretorios e seus arquivos 
+-- Funcao ls - Recebe um dirtorio e retorna seus subdiretorios e seus arquivos
 -- em ordem alfabetica
 ls :: Diretorio -> [String] -> [(String, String)] -> String
 ls dir dirAtual apagados = retornaSaidaLs (ordenaLista ( (retornaNomesArqs (retornaArquivos dir) 0) ++ ( retornaNomesDirs (retornaSubdiretorios dir) 0) )) 0 dirAtual apagados
 
--- Funcao connect - Recebe um ip e caso esse ip exista no jogo retorna uma nova 
+-- Funcao connect - Recebe um ip e caso esse ip exista no jogo retorna uma nova
 -- lista para representar o diretorio atual, caso nao exista o ip, retorna uma
 -- lista vazia
 connect :: String -> [String]
@@ -299,7 +299,7 @@ cat dir "" dirAtual apagados = "Informe o nome de um arquivo para ler."
 cat dir nome dirAtual apagados
  | nomeArq arquivo == "" || (notA (listaNaoPossui apagados (servidor, nome))) = "Arquivo " ++ nome ++ " nao encontrado."
  | otherwise = conteudo arquivo
- where 
+ where
   arquivo = retornaArquivo (retornaArquivos dir) nome 0
   servidor = dirAtual !! 0
 
@@ -310,7 +310,7 @@ rm dir "" apagados  dirAtual = apagados
 rm dir nomeArquivo apagados dirAtual
  | nomeArq arquivo /= "" && (listaNaoPossui apagados (servidor,nomeArquivo)) = apagados ++ [(servidor,nomeArquivo)]
  | otherwise = [("erro","")]
- where 
+ where
   arquivo = (retornaArquivo (retornaArquivos dir) nomeArquivo 0)
   servidor = (dirAtual !! 0)
 
@@ -369,7 +369,7 @@ retornaNovaMensagem entrada idMens apagados= idMens
 
 -- Espera digitar um Enter para mudar a mensagem
 esperaEnter :: IO ()
-esperaEnter = do 
+esperaEnter = do
  putStr "\nDigite Enter para continuar..."
  getLine
  putStr ""
@@ -379,60 +379,101 @@ esperaEnter = do
 mainLoop dirAtual arquivosApagados idMsg jaImprimiuMsg = do
   d <- retornaEither
   m <- retornaEitherM
-  
+
   let dirVazio = Diretorio "" [] []
   let diretorio = (retornaDiretorioAtual dirVazio (lerJSON d) dirAtual 0 (len dirAtual))
-  
+
   let mensagemRecebida = retornaConteudoMensagem (retornaMensagem (lerJSONM m) idMsg)
-  
+
   if (not jaImprimiuMsg) then putStrLn mensagemRecebida else (putStr "")
-  
+
   putStr ("root@" ++ (formataCaminhoAtual dirAtual) ++ ":>> ")
-  
+
   entrada <- getLine
-  
-  let idMensagem = retornaNovaMensagem entrada idMsg arquivosApagados 
+
+  let idMensagem = retornaNovaMensagem entrada idMsg arquivosApagados
   let splitted = Data.List.Split.splitOn " " entrada
   let nomeFuncao = Prelude.head splitted
   let nomeArquivo = if (len splitted > 1) then Prelude.head (Prelude.tail splitted) else ""
-  
+
   let resultChamaFuncao = (chamaFuncao nomeFuncao diretorio nomeArquivo dirAtual arquivosApagados mensagemRecebida)
-  if (resultChamaFuncao == "") then (putStr "") else (putStrLn resultChamaFuncao)  
-  
+  if (resultChamaFuncao == "") then (putStr "") else (putStrLn resultChamaFuncao)
+
   let resultadoTroca = (if nomeFuncao == "cd" then (cd nomeArquivo diretorio dirAtual) else (if nomeFuncao == "connect" then (connect nomeArquivo) else (if (nomeFuncao == "disconnect") then (if (dirAtual !! 0 /= "135.110.60.200") then ["135.110.60.200", "home"] else (dirAtual) ) else dirAtual)))
- 
+
   let novoDirAtual = if (Prelude.head resultadoTroca == "erro") then dirAtual else resultadoTroca
-  
+
   let saidaRm = if nomeFuncao == "rm" then rm diretorio nomeArquivo arquivosApagados dirAtual else arquivosApagados
   let novosArquivosApagados = if saidaRm /= [("erro", "")] then saidaRm else arquivosApagados
-  
+
   if nomeFuncao == "clear" then clearScreen else (putStr "")
-  
+
   let novoJaImprimiuMsg = idMensagem == idMsg
   if entrada == "exit" then (putStr "") else mainLoop novoDirAtual novosArquivosApagados idMensagem novoJaImprimiuMsg -- cada comando aumenta a pilha de recursão! tadinho do stack
 
+__creditos__ :: IO ()
+__creditos__ = do
+
+  d <- retornaEither
+  m <- retornaEitherM
+
+  putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 12))
+  esperaEnter
+
+  __menu__
+
+__menu__ :: IO ()
+__menu__ = do
+
+  d <- retornaEither
+  m <- retornaEitherM
+
+  putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 11))
+
+  escolha <- getLine
+  clearScreen
+  if escolha == "1" then
+    __start__
+  else if escolha == "2" then
+    __creditos__
+  else if escolha == "3" then
+    putStr("")
+  else
+    __menu__
+
+__start__ :: IO ()
+__start__ = do
+
+  d <- retornaEither
+  m <- retornaEitherM
+
+  let dirAtual = ["135.110.60.200", "home"]
+  let arquivosApagados = [("135.110.60.200", "i"),("","")]
+
+  putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 1))
+  esperaEnter
+
+  putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 2))
+  esperaEnter
+
+  putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 3))
+  esperaEnter
+
+  putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 4))
+  esperaEnter
+
+  mainLoop dirAtual arquivosApagados 4 True
+
+__init__ :: IO ()
+__init__ = do
+
+  d <- retornaEither
+  m <- retornaEitherM
+
+  putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 0))
+
+  __menu__
+
 main :: IO ()
 main = do
-  
- d <- retornaEither
- m <- retornaEitherM
- 
- let dirAtual = ["135.110.60.200", "home"]
- let arquivosApagados = [("135.110.60.200", "i"),("","")]
-
- putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 0))
- esperaEnter
-  
- putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 1))
- esperaEnter
-
- putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 2))
- esperaEnter
- 
- putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 3))
- esperaEnter
-
- putStr (retornaConteudoMensagem (retornaMensagem (lerJSONM m) 4))
- esperaEnter
-
- mainLoop dirAtual arquivosApagados 4 True
+  __init__
