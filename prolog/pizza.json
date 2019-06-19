@@ -1,0 +1,6 @@
+[ 
+   {"nome" : "principal",
+    "subdiretorios" : [ {"nome" : "home", "subdiretorios" : [], "arquivos" : []} ],
+    "arquivos" : [{"nomeArq" : "log", "conteudo" : "192.590.90,00" }]
+   }
+]
