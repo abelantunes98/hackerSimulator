@@ -17,7 +17,7 @@ menu :-
   read(Escolha),
   shell(clear),
   (((((Escolha = 1) ->
-  start) ; 
+  start) ;
   (Escolha = 2) ->
   creditos) ;
   (Escolha = 3) ->
