@@ -1,155 +1,271 @@
 :- set_prolog_flag(verbose, silent).
+:- [servidores].
 :- [mensagens].
 :- initialization(main).
 
-% o predicado get_diretorio_atual(Dir) unifica Dir com o diretorio atual
+% o predicado diretorio_atual(Dir) unifica Dir com o diretorio atual
 % set_diretorio_atual(Dir) fara Dir ser o novo diretorio atual
-:- dynamic diratual(Dir).
-get_diretorio_atual(Dir) :- diratual(Dir).
-set_diretorio_atual(Dir) :- retractall(diratual), assertz(diratual(Dir)).
+% Dir eh a lista que tem primeiro o ip do servidor e depois o caminho de diretorios ate o atual
+:- dynamic diretorio_atual(Dir).
+set_diretorio_atual(Dir) :- retractall(diretorio_atual(_)), asserta(diretorio_atual(Dir)).
 
 % o predicado reset_arquivos_apagados reseta a lista para o inicial
-% get_arquivos_apagados(ListArq) unifica ListArq com a lista de arquivos
 % o arquivo apagado eh representado pela tupla (servidor, nome)
 % apaga_arquivo(Arq) adiciona Arq aos arquivos apagados
 % nao tem como "desapagar" um arquivo, apenas resetar toda a lista
 :- dynamic arquivos_apagados(ListArq).
 reset_arquivos_apagados :-
-  retractall(arquivos_apagados),
-  assertz(arquivos_apagados([('135.110.60.200', 'i'), ('','')])).
-get_arquivos_apagados(ListArq) :- arquivos_apagados(ListArq).
+  retractall(arquivos_apagados(_)),
+  assertz(arquivos_apagados([])).
 apaga_arquivo(Arq) :-
   arquivos_apagados(ListArqAntiga),
-  append(ListArqAntiga,[Arq], ListAqrNova),
-  retractall(arquivos_apagados),
-  assertz(ListAqrNova).
+  append(ListArqAntiga, [Arq], ListAqrNova),
+  retractall(arquivos_apagados(_)),
+  assertz(arquivos_apagados(ListAqrNova)).
 
-% o predicado get_id_mensagem(Id) unifica Id com o id da mensagem atual
 % set_id_mensagem(Id) fara Id ser a nova mensagem atual
 :- dynamic id_mensagem(Id).
-get_id_mensagem(Id) :- id_mensagem(Id).
 set_id_mensagem(Id) :- retractall(id_mensagem), assertz(id_mensagem(Id)).
 
 % set_nao_imprimiu_mensagem define que a mensagem nao foi impressa
 % set_imprimiu_mensagem define que a mensagem foi impressa
 % ja_imprimiu_mensagem pergunta se a mensagem foi impressa
 :- dynamic ja_imprimiu_mensagem.
-set_nao_imprimiu_mensagem(Id) :- retractall(ja_imprimiu_mensagem).
-set_imprimiu_mensagem(Id) :- assertz(ja_imprimiu_mensagem).
+set_nao_imprimiu_mensagem. :- retract(ja_imprimiu_mensagem).
+set_imprimiu_mensagem. :- assertz(ja_imprimiu_mensagem).
 
 % metodo de leitura customizado pra nao precisar de ponto
 readc(Output) :- read_line_to_string(user_input, Output).
 
-escreve_mensagem(NumeroMensagem) :-
-  get_mensagem(NumeroMensagem, M),
+% escreve a mensagem de numero Numero na tela
+escreve_mensagem(Numero) :-
+  get_mensagem(Numero, M),
   write(M).
 
 espera_enter :- 
-  write('\nDigite Enter para continuar...'),
-  readc(_),
-  write('').
+  write("\nDigite Enter para continuar..."),
+  readc(_).
 
-retornaServidor([A, _, _, _, _], '135.110.60.200', A).
-retornaServidor([_, B, _, _, _], '112.84.211.124', B).
-retornaServidor([_, _, C, _, _], '150.189.56.65', C).
-retornaServidor([_, _, _, D, _], '220.99.134.37', D).
-retornaServidor([_, _, _, _, E], _, E).
 
-retornaSubdiretorio(ListaDiretorios, NomeEsperado, IndiceAtual, NomeEsperado) :-
-  nth0(ListaDiretorios, IndiceAtual, NomeEsperado).
 
-% parei aqui...
 
-retornaSubdiretorio array nomeEsperado indiceAtual
- | indiceAtual < len array && ((nome elemento) == nomeEsperado) = elemento
- | indiceAtual < len array = retornaSubdiretorio array nomeEsperado (indiceAtual + 1)
- | otherwise = Diretorio "" [] []
- where elemento = array !! indiceAtual
+% retorna o diretorio atual do programa (na forma diretorio(nome, subdiretorios, arquivos) podendo unificar se quiser)
+retorna_diretorio_atual(DiretorioAtual) :-
+  diretorio_atual([IP|[]]),
+  DiretorioAtual = diretorio(IP, _, _).
 
-retornaDiretorioAtual dir subdirs nomes indice num
-retornaDiretorioAtual :: Diretorio -> [Diretorio] -> [String] -> Int -> Int -> Diretorio
-retornaDiretorioAtual(Diretorio, ListaDiretorio, Nomes, Indice, Num, DiretorioAtual)
-retornaDiretorioAtual(Diretorio, ListaDiretorio, [Nome|_], 0, Num, DiretorioAtual) :-
-  (Num > 1 ->(
-    retornaServidor(ListaDiretorio, Nome, Servidor),
-    let subDirsServ = retornaSubdiretorios servidor
-    retornaDiretorioAtual servidor subDirsServ nomes 1 (num - 1)
-  ); (
-    retornaServidor subdirs (nomes !! 0)
-  ))
+retorna_diretorio_atual(DiretorioAtual) :-
+  diretorio_atual([IP|Path]),
+  diretorio(IP, Subdiretorios, _),
+  retorna_diretorio_atual_t(Subdiretorios, Path, DiretorioAtual).
 
-retornaDiretorioAtual dir subdirs nomes indice 1 = do
- retornaSubdiretorio subdirs (nomes !! indice) 0
+retorna_diretorio_atual_t(Diretorios, [Name|[]], DirAtual) :-
+  retorna_diretorio_de_lista(Name, Diretorios, DirAtual).
 
-retornaDiretorioAtual dir subdirs nomes indice num = do
- let subdir = retornaSubdiretorio subdirs (nomes !! (indice)) 0
- retornaDiretorioAtual subdir (retornaSubdiretorios subdir) nomes (indice + 1) (num - 1)
+retorna_diretorio_atual_t(_, [_|[]], _) :- false.
 
-% ate aqui
+retorna_diretorio_atual_t(Diretorios, [Name|Path], DiretorioAtual) :-
+  retorna_diretorio_de_lista(Name, Diretorios, Dir),
+  diretorio(_,Subdirs,_) = Dir,
+  retorna_diretorio_atual_t(Subdirs, Path, DiretorioAtual).
+
+
+
+
+% retorna_diretorio_de_lista(Name, Lista, Saida): retorna o diretorio de nome Name em Saida caso esteja em Lista, false se nao estiver.
+retorna_diretorio_de_lista(_, [], _) :- false.
+
+retorna_diretorio_de_lista(Name, [Diretorio1|_], Diretorio1) :-
+  diretorio(Name,_,_) = Diretorio1.
+
+retorna_diretorio_de_lista(Name, [_|Resto], X) :-
+  retorna_diretorio_de_lista(Name, Resto, X).
+
+
+
+
+% aqui o cd
+remove_last([], []).
+remove_last([_], []).
+remove_last([X|Xs], [X|Removed]) :- 
+    remove_last(Xs, Removed).
+
+change_directory("..") :-
+  diretorio_atual([Dir|[]]).
+
+change_directory("..") :-
+  diretorio_atual(Dir),
+  remove_last(Dir, NewDir),
+  set_diretorio_atual(NewDir).
+
+change_directory(Name) :-
+  retorna_diretorio_atual(DirAtual),
+  diretorio(_,Subdirs,_) = DirAtual,
+  retorna_diretorio_de_lista(Name, Subdirs, _),
+  diretorio_atual(Dir),
+  append(Dir, [Name], Out),
+  set_diretorio_atual(Out).
+
+
+
+
+arquivo_esta_apagado(Servidor, Nome) :-
+  arquivos_apagados(Apagados),
+  arquivo_esta_apagado_r(Servidor, Nome, Apagados).
+
+arquivo_esta_apagado_r(_, _, []) :- false.
+
+arquivo_esta_apagado_r(Servidor, Nome, [[Servidor, Nome]|_]).
+
+arquivo_esta_apagado_r(Servidor, Nome, [_|Tail]) :-
+  arquivo_esta_apagado_r(Servidor, Nome, Tail).
+
+
+
+
+% aqui o ls
+
+escreve_lista_arquivos([]).
+
+escreve_lista_arquivos([Arquivo1|Tail]) :-
+  Arquivo1 = arquivo(Nome,_),
+  diretorio_atual([Servidor|_]),
+  arquivo_esta_apagado(Servidor, Nome),
+  escreve_lista_arquivos(Tail).
+
+escreve_lista_arquivos([Arquivo1|Tail]) :-
+  Arquivo1 = arquivo(Nome,_),
+  writeln(Nome),
+  escreve_lista_arquivos(Tail).
+
+list_files :-
+  retorna_diretorio_atual(DirAtual),
+  diretorio(_,_,Arquivos) = DirAtual,
+  escreve_lista_arquivos(Arquivos).
+
+
+
+
+% aqui o rm
+remove_arquivo_de_lista([], _) :- writeln("Arquivo não encontrado no diretório.").
+
+remove_arquivo_de_lista([Arquivo1|_], Name) :-
+  arquivo(Name,_) = Arquivo1,
+  diretorio_atual([Servidor|_]),
+  arquivo_esta_apagado(Servidor, Name),
+  writeln("Arquivo não encontrado no diretório.").
+
+remove_arquivo_de_lista([Arquivo1|_], Name) :-
+  arquivo(Name,_) = Arquivo1,
+  diretorio_atual([Servidor|_]),
+  apaga_arquivo([Servidor, Name]).
+
+remove_arquivo_de_lista([_|Resto], Name) :-
+  remove_arquivo_de_lista(Resto, Name).
+
+remove_file(Name) :-
+  retorna_diretorio_atual(DirAtual),
+  diretorio(_,_,Arquivos) = DirAtual,
+  remove_arquivo_de_lista(Arquivos, Name).
+
+
+
+
+chamaFuncao("", _).
+chamaFuncao("clear", []). :- % clear não funciona ??? não sei pq.
+  shell(clear).
+chamaFuncao("clear", _) :-
+  writeln("A função clear não precisa de parâmetros").
+chamaFuncao("ls", _) :- list_files.
+chamaFuncao("cd", [Param|_]) :- change_directory(Param).
+chamaFuncao("cd", [Param|_]) :- write("Diretório não encontrado: "), writeln(Param).
+chamaFuncao("cd", _) :- writeln("A função cd precisa de um parâmetro.").
+chamaFuncao("rm", [Param|_]) :- remove_file(Param).
+chamaFuncao("rm", _) :- writeln("A função rm precisa de um parâmetro.").
+%chamaFuncao("cat", Params) :- cat(Params).
+chamaFuncao("getmessage", []) :-
+  id_mensagem(Id),
+  escreve_mensagem(Id).
+chamaFuncao("getmessage", _) :-
+  write("A função getmessage não precisa de parâmetros"), nl.
+%chamaFuncao("sshinterpol", Params) :-
+%  sshinterpol(Params).
+%chamaFuncao("connect", Params) :-
+%  connect(Params),
+%  write("Connecting to "), write(Mensagem), write("...").
+chamaFuncao("connect", _) :-
+  write("Informe um host válido."), nl.
+chamaFuncao("help", _) :- help, nl.
+chamaFuncao("exit", _) :- 
+  write("Terminando jogo e voltando para o menu..."), nl,
+  %shell(clear),
+  menu.
+%chamaFuncao("disconnect", []) :- disconnect.
+%chamaFuncao("disconnect", _) :- write("A função disconnect não precisa de parâmetros").
+chamaFuncao(Funcao, _) :- write("Função desconhecida: "), writeln(Funcao).
+
+formataCaminhoAtual([], "").
+formataCaminhoAtual([Dh|[]], CaminhoFormatado) :-
+  string_concat(Dh, "/", CaminhoFormatado).
+
+formataCaminhoAtual([Dh|Dt], CaminhoFormatado) :-
+  formataCaminhoAtual(Dt, T),
+  string_concat(Dh, "/", TPart),
+  string_concat(TPart, T, CaminhoFormatado).
+
+escreve_prompt :-
+  write("root@"),
+  diretorio_atual(DA),
+  formataCaminhoAtual(DA, CaminhoFormatado),
+  write(CaminhoFormatado),
+  write(":>>").
+
+talvez_imprime_mensagem :-
+  ja_imprimiu_mensagem.
+
+talvez_imprime_mensagem :-
+  id_mensagem(Id),
+  escreve_mensagem(Id), nl,
+  set_imprimiu_mensagem.
 
 main_loop :-
-  let dirVazio = Diretorio "" [] []
-  let diretorio = (retornaDiretorioAtual dirVazio (lerJSON d) dirAtual 0 (len dirAtual))
-
-  let mensagemRecebida = retornaConteudoMensagem (retornaMensagem (lerJSONM m) idMsg)
-
-  if (not jaImprimiuMsg) then putStrLn mensagemRecebida else (putStr "")
-
-  putStr ("root@" ++ (formataCaminhoAtual dirAtual) ++ ":>> ")
-
-  entrada <- getLine
-
-  let idMensagem = retornaNovaMensagem entrada idMsg arquivosApagados
-  let splitted = Data.List.Split.splitOn " " entrada
-  let nomeFuncao = Prelude.head splitted
-  let nomeArquivo = if (len splitted > 1) then Prelude.head (Prelude.tail splitted) else ""
-
-  let resultChamaFuncao = (chamaFuncao nomeFuncao diretorio nomeArquivo dirAtual arquivosApagados mensagemRecebida)
-  if (resultChamaFuncao == "") then (putStr "") else (putStrLn resultChamaFuncao)
-
-  let resultadoTroca = (if nomeFuncao == "cd" then (cd nomeArquivo diretorio dirAtual) else (if nomeFuncao == "connect" then (connect nomeArquivo) else (if (nomeFuncao == "disconnect") then (if (dirAtual !! 0 /= "135.110.60.200") then ["135.110.60.200", "home"] else (dirAtual) ) else dirAtual)))
-
-  let novoDirAtual = if (Prelude.head resultadoTroca == "erro") then dirAtual else resultadoTroca
-
-  let saidaRm = if nomeFuncao == "rm" then rm diretorio nomeArquivo arquivosApagados dirAtual else arquivosApagados
-  let novosArquivosApagados = if saidaRm /= [("erro", "")] then saidaRm else arquivosApagados
-
-  if nomeFuncao == "clear" then clearScreen else (putStr "")
-
-  let novoJaImprimiuMsg = idMensagem == idMsg
-  if entrada == "exit" then (putStr "") else mainLoop novoDirAtual novosArquivosApagados idMensagem novoJaImprimiuMsg -- cada comando aumenta a pilha de recursão! tadinho do stack
-
+  talvez_imprime_mensagem,
+  escreve_prompt,
+  readc(Entrada),
+  split_string(Entrada, " ", " ", [NomeFuncao|Params]),
+  chamaFuncao(NomeFuncao, Params),
+  main_loop.
 
 start :-
+  %shell(clear),
+  set_diretorio_atual(["135.110.60.200", "sys"]),
+  reset_arquivos_apagados,
+  write("starting"), nl,
   escreve_mensagem(1), espera_enter,
   escreve_mensagem(2), espera_enter,
   escreve_mensagem(3), espera_enter,
   escreve_mensagem(4), espera_enter,
-  main_loop(['135.110.60.200', 'home'],
-  [('135.110.60.200', 'i'),('','')], 4, true).
+  set_imprimiu_mensagem,
+  set_id_mensagem(4),
+  main_loop.
 
 escolha_menu(1) :- start.
 escolha_menu(2) :- % creditos
+  %shell(clear),
   escreve_mensagem(12),
   espera_enter,
+  %shell(clear),
   menu.
 escolha_menu(3) :- halt. % sair
 escolha_menu(A) :- write(A), menu.
 
 menu :-
+  %shell(clear),
   escreve_mensagem(11),
   readc(Escolha),
-  %shell(clear),
   number_string(N, Escolha),
   escolha_menu(N).
 
-init :-
+main :-
   escreve_mensagem(0),
   menu.
-
-main :-
-  %shell(clear),
-  init.
-
-
-% string_chars(String, CharList).
