@@ -140,8 +140,9 @@ escreve_lista_arquivos([Arquivo1|Tail]) :-
 
 list_files :-
   retorna_diretorio_atual(DirAtual),
-  diretorio(_,_,Arquivos) = DirAtual,
+  diretorio(_,Diretorios,Arquivos) = DirAtual,
   escreve_lista_arquivos(Arquivos).
+  %escreve_lista_diretorios(Diretorios). TEM QUE FAZER ESSA FUNCAO
 
 
 
@@ -237,7 +238,7 @@ main_loop :-
 
 start :-
   %shell(clear),
-  set_diretorio_atual(["135.110.60.200", "sys"]),
+  set_diretorio_atual(["135.110.60.200", "home"]),
   reset_arquivos_apagados,
   write("starting"), nl,
   escreve_mensagem(1), espera_enter,
