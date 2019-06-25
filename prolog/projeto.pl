@@ -31,8 +31,8 @@ set_id_mensagem(Id) :- retractall(id_mensagem), assertz(id_mensagem(Id)).
 % set_imprimiu_mensagem define que a mensagem foi impressa
 % ja_imprimiu_mensagem pergunta se a mensagem foi impressa
 :- dynamic ja_imprimiu_mensagem.
-set_nao_imprimiu_mensagem. :- retract(ja_imprimiu_mensagem).
-set_imprimiu_mensagem. :- assertz(ja_imprimiu_mensagem).
+set_nao_imprimiu_mensagem :- retract(ja_imprimiu_mensagem).
+set_imprimiu_mensagem :- assertz(ja_imprimiu_mensagem).
 
 % metodo de leitura customizado pra nao precisar de ponto
 readc(Output) :- read_line_to_string(user_input, Output).
@@ -101,7 +101,7 @@ change_directory("..") :-
 change_directory(Name) :-
   retorna_diretorio_atual(DirAtual),
   diretorio(_,Subdirs,_) = DirAtual,
-  retorna_diretorio_de_lista(Name, Subdirs, _),
+  retorna_diretorio_de_lista(Name, Subdirs, _), % essa linha serve para verificar que o dir de destino existe (mas não usa o pŕoprio)
   diretorio_atual(Dir),
   append(Dir, [Name], Out),
   set_diretorio_atual(Out).
@@ -109,6 +109,7 @@ change_directory(Name) :-
 
 
 
+% retorna true se o arquivo está apagado.
 arquivo_esta_apagado(Servidor, Nome) :-
   arquivos_apagados(Apagados),
   arquivo_esta_apagado_r(Servidor, Nome, Apagados).
@@ -124,7 +125,6 @@ arquivo_esta_apagado_r(Servidor, Nome, [_|Tail]) :-
 
 
 % aqui o ls
-
 escreve_lista_arquivos([]).
 
 escreve_lista_arquivos([Arquivo1|Tail]) :-
@@ -172,11 +172,10 @@ remove_file(Name) :-
 
 
 chamaFuncao("", _).
-chamaFuncao("clear", []). :- % clear não funciona ??? não sei pq.
-  shell(clear).
-chamaFuncao("clear", _) :-
-  writeln("A função clear não precisa de parâmetros").
-chamaFuncao("ls", _) :- list_files.
+chamaFuncao("clear", []) :- shell(clear).
+chamaFuncao("clear", _) :- writeln("A função clear não precisa de parâmetros").
+chamaFuncao("ls", []) :- list_files.
+chamaFuncao("ls", _) :- writeln("A função ls não precisa de parâmetros").
 chamaFuncao("cd", [Param|_]) :- change_directory(Param).
 chamaFuncao("cd", [Param|_]) :- write("Diretório não encontrado: "), writeln(Param).
 chamaFuncao("cd", _) :- writeln("A função cd precisa de um parâmetro.").
