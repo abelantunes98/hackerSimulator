@@ -9,6 +9,7 @@ get_mensagem(7, '\nHash: Agora eu preciso que você encontre e execute um progra
 get_mensagem(8, '\nHash: ALERTA! Novo IP 220.99.134.37 conectado! Essa ferramenta foi feita para\nacionamento da polícia em novos IPs acessados! Todos os arquivos serão expostos em\n3... 2... 1...\n').
 get_mensagem(9, '\nOi novamente.\nSou eu, Hash, e se você está lendo isso, eu já estou morto, o que é uma pena.\n\nMas isso também significa que você os parou.\nEntão... acho que terminamos. Você conseguiu!!\nFazer isso foi a nossa última chance de conseguir justiça.\nEntão... obrigado!\nObrigado mesmo!!\n').
 get_mensagem(10, '\nHuum... Você conseguiu chamar a polícia, mas esqueceu seu log em algumas máquinas... Logo será o próximo...\n').
+get_mensagem(404, 'O arquivo sshinterpol foi apagado, você perdeu!').
 get_mensagem(11, '\n  _    _                  _                       _____   _                       _           _
  | |  | |                | |                     / ____| (_)                     | |         | |                 \n
  | |__| |   __ _    ___  | | __   ___   _ __    | (___    _   _ __ ___    _   _  | |   __ _  | |_    ___    _ __ \n

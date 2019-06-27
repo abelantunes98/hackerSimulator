@@ -235,13 +235,34 @@ chamaFuncao("getmessage", []) :-
   escreve_mensagem(Id).
 chamaFuncao("getmessage", _) :-
   writeln("A função getmessage não precisa de parâmetros").
-%chamaFuncao("sshinterpol", Params) :-
-%  sshinterpol(Params).
+chamaFuncao("sshinterpol", [_|_]) :-
+  diretorio_atual(["150.189.56.65"|_]),
+  arquivo_esta_apagado("150.189.56.65", "sshinterpol"),
+  writeln("Função não encontrada: sshinterpol").
+chamaFuncao("sshinterpol", ["220.99.134.37"|_]) :-
+  diretorio_atual(["150.189.56.65"|_]).
+chamaFuncao("sshinterpol", ["150.189.56.65"|_]) :-
+ diretorio_atual(["150.189.56.65"|_]),
+ writeln("Você não pode denunciar inocentes.").
+chamaFuncao("sshinterpol", ["112.84.211.124"|_]) :-
+ diretorio_atual(["150.189.56.65"|_]),
+ writeln("Você não pode denunciar inocentes.").
+chamaFuncao("sshinterpol", ["135.110.60.200"|_]) :-
+ diretorio_atual(["150.189.56.65"|_]),
+ writeln("Você não pode denunciar inocentes.").
+chamaFuncao("sshinterpol", [_|_]) :-
+ diretorio_atual(["150.189.56.65"|_]),
+ writeln("Informe um Host válido.").
+chamaFuncao("sshinterpol", [_|_]) :-
+ writeln("Função desconhecida: sshinterpol").
+
 chamaFuncao("connect", _) :-
   write("Informe um host válido."), nl.
 chamaFuncao("help", _) :- help, nl.
 chamaFuncao("exit", _) :- 
   write("Terminando jogo e voltando para o menu..."), nl,
+  set_id_mensagem(0),
+  set_nao_imprimiu_mensagem,
   menu.
 chamaFuncao(Funcao, _) :- write("Função desconhecida: "), writeln(Funcao).
 
@@ -286,7 +307,8 @@ seleciona_mensagem("connect 150.189.56.65", 6) :-
 seleciona_mensagem("sshinterpol 220.99.134.37", 7) :-
   diretorio_atual([Servidor|_]),
   arquivo_esta_apagado(Servidor, "sshinterpol"),
-  writeln ("Função desconhecida: sshinterpol").
+  set_id_mensagem(404),
+  set_nao_imprimiu_mensagem.
 
 seleciona_mensagem("sshinterpol 220.99.134.37", 7) :-
   set_id_mensagem(8),
@@ -315,7 +337,7 @@ main_loop :-
   main_loop.
 
 start :-
-  %shell(clear),
+  shell(clear),
   set_diretorio_atual(["135.110.60.200", "home"]),
   reset_arquivos_apagados,
   write("starting"), nl,
@@ -338,7 +360,7 @@ escolha_menu(3) :- halt. % sair
 escolha_menu(A) :- write(A), menu.
 
 menu :-
-  %shell(clear),
+  shell(clear),
   escreve_mensagem(11),
   readc(Escolha),
   number_string(N, Escolha),
