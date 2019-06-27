@@ -46,7 +46,6 @@ espera_enter :-
   write("\nDigite Enter para continuar..."),
   readc(_).
 
-
 servidor_com_ip("135.110.60.200", DiretorioAtual) :-
   servidores([DiretorioAtual, _, _, _]).
 
@@ -77,9 +76,6 @@ retorna_diretorio_atual_t(Diretorios, [Name|Path], DiretorioAtual) :-
   retorna_diretorio_de_lista(Name, Diretorios, Dir),
   diretorio(_,Subdirs,_) = Dir,
   retorna_diretorio_atual_t(Subdirs, Path, DiretorioAtual).
-
-
-
 
 % retorna_diretorio_de_lista(Name, Lista, Saida): retorna o diretorio de nome Name em Saida caso esteja em Lista, false se nao estiver.
 retorna_diretorio_de_lista(_, [], _) :- false.
@@ -129,8 +125,8 @@ arquivo_esta_apagado_r(Servidor, Nome, [[Servidor, Nome]|_]).
 arquivo_esta_apagado_r(Servidor, Nome, [_|Tail]) :-
   arquivo_esta_apagado_r(Servidor, Nome, Tail).
 
-
-% Connect
+% Connect - Recebe um ip e caso esse ip exista no jogo retorna uma nova
+% lista para representar o diretorio atual, caso nao exista o ip, retorna uma lista vazia
 connect("").
 
 connect("135.110.60.200") :-
@@ -145,14 +141,15 @@ connect("112.84.211.124") :-
 connect("150.189.56.65") :-
   set_diretorio_atual(["150.189.56.65", "home"]).
 
-% Disconnect
+% Disconnect - desconecta o usuario de um servidor remoto
 disconnect(["135.110.60.200"|_]) :-
   writeln("Você não está conectado a um Host externo.").
 
 disconnect([_|_]) :-
   set_diretorio_atual(["135.110.60.200", "home"]).
 
-% aqui o ls
+% ls - essa funcao apartir do diretorio recebido retorna seus 
+% arquivos e subdiretorios
 escreve_lista_arquivos([]).
 
 escreve_lista_arquivos([Arquivo1|Tail]) :-
@@ -177,7 +174,8 @@ list_files :-
   escreve_lista_arquivos(Arquivos),
   escreve_lista_diretorios(Subdirs).
 
-% Cat
+% Cat - a partir do nome do arquivo ele retorna seu conteudo será mostrado 
+% caso o arquivo nao exista mostra a mensagem arquivo nao encontrado
 cat(NomeArquivo) :-
   retorna_diretorio_atual(diretorio(_,_,Arquivos)),
   retorna_arquivo_de_lista(NomeArquivo, Arquivos, arquivo(_,Conteudo)),
