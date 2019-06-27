@@ -58,7 +58,8 @@ servidor_com_ip("150.189.56.65", DiretorioAtual) :-
 servidor_com_ip("220.99.134.37", DiretorioAtual) :-
   servidores([_, _, _, DiretorioAtual]).
 
-% retorna o diretorio atual do programa (na forma diretorio(nome, subdiretorios, arquivos) podendo unificar se quiser)
+% retorna o diretorio atual do programa (na forma diretorio(nome, subdiretorios, arquivos) 
+% podendo unificar se quiser)
 retorna_diretorio_atual(DiretorioAtual) :-
   diretorio_atual([IP]), servidor_com_ip(IP, DiretorioAtual).
 
@@ -77,7 +78,8 @@ retorna_diretorio_atual_t(Diretorios, [Name|Path], DiretorioAtual) :-
   diretorio(_,Subdirs,_) = Dir,
   retorna_diretorio_atual_t(Subdirs, Path, DiretorioAtual).
 
-% retorna_diretorio_de_lista(Name, Lista, Saida): retorna o diretorio de nome Name em Saida caso esteja em Lista, false se nao estiver.
+% retorna_diretorio_de_lista(Name, Lista, Saida): retorna o diretorio de nome Name em 
+% Saida caso esteja em Lista, false se nao estiver.
 retorna_diretorio_de_lista(_, [], _) :- false.
 
 retorna_diretorio_de_lista(Name, [Diretorio1|_], Diretorio1) :-
@@ -188,7 +190,8 @@ cat(NomeArquivo) :-
   retorna_arquivo_de_lista(NomeArquivo, Arquivos, arquivo(_,Conteudo)),
   writeln(Conteudo).
 
-% aqui o rm
+% rm - essa funcao ao ser chamada apaga um arquivo do diretorio, arquivo esse
+% que será verificado a existencia no diretorio atual
 remove_arquivo_de_lista([], _) :- writeln("Arquivo não encontrado no diretório.").
 
 remove_arquivo_de_lista([Arquivo1|_], Name) :-
@@ -210,6 +213,8 @@ remove_file(Name) :-
   diretorio(_,_,Arquivos) = DirAtual,
   remove_arquivo_de_lista(Arquivos, Name).
 
+% a partir da entrada do usuario identifica o comando desejado
+% juntamente com os atributos
 chamaFuncao("", _).
 chamaFuncao("clear", []) :- shell(clear).
 chamaFuncao("clear", _) :- writeln("A função clear não precisa de parâmetros.").
@@ -289,7 +294,6 @@ talvez_imprime_mensagem :-
   set_imprimiu_mensagem.
 
 % Selecionando mensagem para enviar de acordo com o que é feito
-
 seleciona_mensagem("connect 112.84.211.124", 4) :-
   set_id_mensagem(5),
   set_nao_imprimiu_mensagem.
