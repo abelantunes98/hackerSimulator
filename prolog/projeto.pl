@@ -81,9 +81,6 @@ retorna_diretorio_de_lista(Name, [Diretorio1|_], Diretorio1) :-
 retorna_diretorio_de_lista(Name, [_|Resto], X) :-
   retorna_diretorio_de_lista(Name, Resto, X).
 
-
-
-
 % aqui o cd
 remove_last([], []).
 remove_last([_], []).
@@ -122,7 +119,30 @@ arquivo_esta_apagado_r(Servidor, Nome, [_|Tail]) :-
   arquivo_esta_apagado_r(Servidor, Nome, Tail).
 
 
+% Connect
+connect("").
 
+connect("135.110.60.200") :-
+ writeln("Esse é o seu Host.").
+
+connect("112.84.211.124") :-
+  set_diretorio_atual(["112.84.211.124", "home"]).
+
+connect("150.189.56.65") :-
+  set_diretorio_atual(["150.189.56.65", "home"]).
+
+connect("112.84.211.124") :-
+  set_diretorio_atual(["112.84.211.124", "home"]).
+
+connect("220.99.134.37") :-
+  set_diretorio_atual(["220.99.134.37"]).
+
+% Disconnect
+disconnect(["135.110.60.200"|_]) :-
+  writeln("Você não está conectado a um Host externo.").
+
+disconnect([_|_]) :-
+  set_diretorio_atual(["135.110.60.200", "home"]).
 
 % aqui o ls
 escreve_lista_arquivos([]).
@@ -138,14 +158,19 @@ escreve_lista_arquivos([Arquivo1|Tail]) :-
   writeln(Nome),
   escreve_lista_arquivos(Tail).
 
+
+escreve_lista_diretorios([]).
+
+escreve_lista_diretorios([Diretorio1|Tail]) :-
+  Diretorio1 = diretorio(Nome,_,_),
+  writeln(Nome),
+  escreve_lista_diretorios(Tail).
+
 list_files :-
   retorna_diretorio_atual(DirAtual),
   diretorio(_,Diretorios,Arquivos) = DirAtual,
-  escreve_lista_arquivos(Arquivos).
-  %escreve_lista_diretorios(Diretorios). TEM QUE FAZER ESSA FUNCAO
-
-
-
+  escreve_lista_arquivos(Arquivos),
+  escreve_lista_diretorios(Diretorios). 
 
 % aqui o rm
 remove_arquivo_de_lista([], _) :- writeln("Arquivo não encontrado no diretório.").
@@ -169,12 +194,14 @@ remove_file(Name) :-
   diretorio(_,_,Arquivos) = DirAtual,
   remove_arquivo_de_lista(Arquivos, Name).
 
-
-
-
 chamaFuncao("", _).
 chamaFuncao("clear", []) :- shell(clear).
-chamaFuncao("clear", _) :- writeln("A função clear não precisa de parâmetros").
+chamaFuncao("clear", _) :- writeln("A função clear não precisa de parâmetros.").
+chamaFuncao("connect", []) :- writeln("Informe um Host.").
+chamaFuncao("connect", [Host|_]) :- connect(Host).
+chamaFuncao("connect", [Host|_]) :- writeln("Informe um Host válido.").
+chamaFuncao("disconnect", []) :- diretorio_atual(DirX), disconnect(DirX).
+chamaFuncao("disconnect", _) :- writeln("A função disconnect não precisa de parâmetros.").
 chamaFuncao("ls", []) :- list_files.
 chamaFuncao("ls", _) :- writeln("A função ls não precisa de parâmetros").
 chamaFuncao("cd", [Param|_]) :- change_directory(Param).
@@ -218,7 +245,7 @@ escreve_prompt :-
   diretorio_atual(DA),
   formataCaminhoAtual(DA, CaminhoFormatado),
   write(CaminhoFormatado),
-  write(":>>").
+  write(":>> ").
 
 talvez_imprime_mensagem :-
   ja_imprimiu_mensagem.
@@ -267,5 +294,6 @@ menu :-
   escolha_menu(N).
 
 main :-
+  shell(clear),
   escreve_mensagem(0),
   menu.
