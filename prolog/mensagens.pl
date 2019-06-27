@@ -10,10 +10,10 @@ get_mensagem(8, '\nHash: ALERTA! Novo IP 220.99.134.37 conectado! Essa ferrament
 get_mensagem(9, '\nOi novamente.\nSou eu, Hash, e se você está lendo isso, eu já estou morto, o que é uma pena.\n\nMas isso também significa que você os parou.\nEntão... acho que terminamos. Você conseguiu!!\nFazer isso foi a nossa última chance de conseguir justiça.\nEntão... obrigado!\nObrigado mesmo!!\n').
 get_mensagem(10, '\nHuum... Você conseguiu chamar a polícia, mas esqueceu seu log em algumas máquinas... Logo será o próximo...\n').
 get_mensagem(11, '\n  _    _                  _                       _____   _                       _           _
- | |  | |                | |                     / ____| (_)                     | |         | |                 \n
- | |__| |   __ _    ___  | | __   ___   _ __    | (___    _   _ __ ___    _   _  | |   __ _  | |_    ___    _ __ \n
- |  __  |  / _` |  / __| | |/ /  / _ \\ | \'__|    \\___ \\  | | | \'_ ` _ \\  | | | | | |  / _` | | __|  / _ \\  | \'__|\n
- | |  | | | (_| | | (__  |   <  |  __/ | |       ____) | | | | | | | | | | |_| | | | | (_| | | |_  | (_) | | |   \n
+ | |  | |                | |                     / ____| (_)                     | |         | |                 
+ | |__| |   __ _    ___  | | __   ___   _ __    | (___    _   _ __ ___    _   _  | |   __ _  | |_    ___    _ __ 
+ |  __  |  / _` |  / __| | |/ /  / _ \\ | \'__|    \\___ \\  | | | \'_ ` _ \\  | | | | | |  / _` | | __|  / _ \\  | \'__|
+ | |  | | | (_| | | (__  |   <  |  __/ | |       ____) | | | | | | | | | | |_| | | | | (_| | | |_  | (_) | | |   
  |_|  |_|  \\__,_|  \\___| |_|\\_\\  \\___| |_|      |_____/  |_| |_| |_| |_|  \\__,_| |_|  \\__,_|  \\__|  \\___/  |_|\n\n1. Jogar\n2. Créditos\n3. Sair\n\nDigite uma opção para continuar: ').
 get_mensagem(12, '\n\n    Alunos:\n            Abel Antunes de Lima Neto\n            Igor Santa Ritta Seabra\n            José Guilherme Coelho de Oliveira\n            Siuanny Barbosa dos Santos Rocha\n            Victor Paz de Farias Braga\n            Wesley Roseno Saraiva\n\n    Projeto desenvolvido para a disciplina de Paradigmas de Linguagem de Programação @UFCG\n\n').
 get_mensagem(_, '').
