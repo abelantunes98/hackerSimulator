@@ -58,7 +58,8 @@ servidor_com_ip("150.189.56.65", DiretorioAtual) :-
 servidor_com_ip("220.99.134.37", DiretorioAtual) :-
   servidores([_, _, _, DiretorioAtual]).
 
-% retorna o diretorio atual do programa (na forma diretorio(nome, subdiretorios, arquivos) podendo unificar se quiser)
+% retorna o diretorio atual do programa (na forma diretorio(nome, subdiretorios, arquivos) 
+% podendo unificar se quiser)
 retorna_diretorio_atual(DiretorioAtual) :-
   diretorio_atual([IP]), servidor_com_ip(IP, DiretorioAtual).
 
@@ -77,7 +78,8 @@ retorna_diretorio_atual_t(Diretorios, [Name|Path], DiretorioAtual) :-
   diretorio(_,Subdirs,_) = Dir,
   retorna_diretorio_atual_t(Subdirs, Path, DiretorioAtual).
 
-% retorna_diretorio_de_lista(Name, Lista, Saida): retorna o diretorio de nome Name em Saida caso esteja em Lista, false se nao estiver.
+% retorna_diretorio_de_lista(Name, Lista, Saida): retorna o diretorio de nome Name em 
+% Saida caso esteja em Lista, false se nao estiver.
 retorna_diretorio_de_lista(_, [], _) :- false.
 
 retorna_diretorio_de_lista(Name, [Diretorio1|_], Diretorio1) :-
