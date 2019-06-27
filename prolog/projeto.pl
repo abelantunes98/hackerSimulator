@@ -139,9 +139,11 @@ connect("135.110.60.200") :-
 connect("220.99.134.37") :-
   set_diretorio_atual(["220.99.134.37"]).
 
-connect(X) :-
-  diretorio(X, _, _),
-  set_diretorio_atual([X, "home"]).
+connect("112.84.211.124") :-
+  set_diretorio_atual(["112.84.211.124", "home"]).
+
+connect("150.189.56.65") :-
+  set_diretorio_atual(["150.189.56.65", "home"]).
 
 % Disconnect
 disconnect(["135.110.60.200"|_]) :-
