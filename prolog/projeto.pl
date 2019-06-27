@@ -25,7 +25,7 @@ apaga_arquivo(Arq) :-
 
 % set_id_mensagem(Id) fara Id ser a nova mensagem atual
 :- dynamic id_mensagem/1.
-set_id_mensagem(Id) :- retractall(id_mensagem), assertz(id_mensagem(Id)).
+set_id_mensagem(Id) :- retractall(id_mensagem(_)), assertz(id_mensagem(Id)).
 
 % set_nao_imprimiu_mensagem define que a mensagem nao foi impressa
 % set_imprimiu_mensagem define que a mensagem foi impressa
@@ -181,6 +181,13 @@ list_files :-
 cat(NomeArquivo) :-
   retorna_diretorio_atual(diretorio(_,_,Arquivos)),
   retorna_arquivo_de_lista(NomeArquivo, Arquivos, arquivo(_,Conteudo)),
+  diretorio_atual([Servidor|_]),
+  arquivo_esta_apagado(Servidor, NomeArquivo),
+  write("Arquivo não encontrado: "), writeln(NomeArquivo).
+
+cat(NomeArquivo) :-
+  retorna_diretorio_atual(diretorio(_,_,Arquivos)),
+  retorna_arquivo_de_lista(NomeArquivo, Arquivos, arquivo(_,Conteudo)),
   writeln(Conteudo).
 
 % aqui o rm
@@ -262,10 +269,47 @@ talvez_imprime_mensagem :-
   escreve_mensagem(Id), nl,
   set_imprimiu_mensagem.
 
+% Selecionando mensagem para enviar de acordo com o que é feito
+
+seleciona_mensagem("connect 112.84.211.124", 4) :-
+  set_id_mensagem(5),
+  set_nao_imprimiu_mensagem.
+
+seleciona_mensagem("disconnect", 5) :-
+  set_id_mensagem(6),
+  set_nao_imprimiu_mensagem.
+
+seleciona_mensagem("connect 150.189.56.65", 6) :-
+  set_id_mensagem(7),
+  set_nao_imprimiu_mensagem.
+
+seleciona_mensagem("sshinterpol 220.99.134.37", 7) :-
+  diretorio_atual([Servidor|_]),
+  arquivo_esta_apagado(Servidor, "sshinterpol"),
+  writeln ("Função desconhecida: sshinterpol").
+
+seleciona_mensagem("sshinterpol 220.99.134.37", 7) :-
+  set_id_mensagem(8),
+  set_nao_imprimiu_mensagem.
+
+seleciona_mensagem("disconnect", 8) :-
+  arquivo_esta_apagado("112.84.211.124", "log.txt"),
+  arquivo_esta_apagado("150.189.56.65", "log.txt"),
+  set_id_mensagem(9),
+  set_nao_imprimiu_mensagem.
+
+seleciona_mensagem("disconnect", 8) :-
+  set_id_mensagem(10),
+  set_nao_imprimiu_mensagem.
+
+seleciona_mensagem(_,_).
+
 main_loop :-
   talvez_imprime_mensagem,
   escreve_prompt,
+  id_mensagem(Id),
   readc(Entrada),
+  seleciona_mensagem(Entrada, Id),
   split_string(Entrada, " ", " ", [NomeFuncao|Params]),
   chamaFuncao(NomeFuncao, Params),
   main_loop.
