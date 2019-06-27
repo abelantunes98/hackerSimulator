@@ -6,14 +6,14 @@
 % o predicado diretorio_atual(Dir) unifica Dir com o diretorio atual
 % set_diretorio_atual(Dir) fara Dir ser o novo diretorio atual
 % Dir eh a lista que tem primeiro o ip do servidor e depois o caminho de diretorios ate o atual
-:- dynamic diretorio_atual(Dir).
+:- dynamic diretorio_atual/1.
 set_diretorio_atual(Dir) :- retractall(diretorio_atual(_)), asserta(diretorio_atual(Dir)).
 
 % o predicado reset_arquivos_apagados reseta a lista para o inicial
 % o arquivo apagado eh representado pela tupla (servidor, nome)
 % apaga_arquivo(Arq) adiciona Arq aos arquivos apagados
 % nao tem como "desapagar" um arquivo, apenas resetar toda a lista
-:- dynamic arquivos_apagados(ListArq).
+:- dynamic arquivos_apagados/1.
 reset_arquivos_apagados :-
   retractall(arquivos_apagados(_)),
   assertz(arquivos_apagados([])).
@@ -24,7 +24,7 @@ apaga_arquivo(Arq) :-
   assertz(arquivos_apagados(ListAqrNova)).
 
 % set_id_mensagem(Id) fara Id ser a nova mensagem atual
-:- dynamic id_mensagem(Id).
+:- dynamic id_mensagem/1.
 set_id_mensagem(Id) :- retractall(id_mensagem), assertz(id_mensagem(Id)).
 
 % set_nao_imprimiu_mensagem define que a mensagem nao foi impressa
@@ -47,16 +47,25 @@ espera_enter :-
   readc(_).
 
 
+servidor_com_ip("135.110.60.200", DiretorioAtual) :-
+  servidores([DiretorioAtual, _, _, _]).
 
+servidor_com_ip("112.84.211.124", DiretorioAtual) :-
+  servidores([_, DiretorioAtual, _, _]).
+
+servidor_com_ip("150.189.56.65", DiretorioAtual) :-
+  servidores([_, _, DiretorioAtual, _]).
+
+servidor_com_ip("220.99.134.37", DiretorioAtual) :-
+  servidores([_, _, _, DiretorioAtual]).
 
 % retorna o diretorio atual do programa (na forma diretorio(nome, subdiretorios, arquivos) podendo unificar se quiser)
 retorna_diretorio_atual(DiretorioAtual) :-
-  diretorio_atual([IP|[]]),
-  DiretorioAtual = diretorio(IP, _, _).
+  diretorio_atual([IP]), servidor_com_ip(IP, DiretorioAtual).
 
 retorna_diretorio_atual(DiretorioAtual) :-
   diretorio_atual([IP|Path]),
-  diretorio(IP, Subdiretorios, _),
+  servidor_com_ip(IP, diretorio(IP, Subdiretorios, _)),
   retorna_diretorio_atual_t(Subdiretorios, Path, DiretorioAtual).
 
 retorna_diretorio_atual_t(Diretorios, [Name|[]], DirAtual) :-
@@ -94,22 +103,19 @@ remove_last([X|Xs], [X|Removed]) :-
     remove_last(Xs, Removed).
 
 change_directory("..") :-
-  diretorio_atual([Dir|[]]).
+  diretorio_atual([_|[]]).
 
 change_directory("..") :-
   diretorio_atual(Dir),
   remove_last(Dir, NewDir),
-  writeln(NewDir),
   set_diretorio_atual(NewDir).
 
 change_directory(Name) :-
-  retorna_diretorio_atual(DirAtual),
-  diretorio(_,Subdirs,_) = DirAtual,
+  retorna_diretorio_atual(diretorio(_,Subdirs,_)),
   retorna_diretorio_de_lista(Name, Subdirs, _), % essa linha serve para verificar que o dir de destino existe (mas não usa o pŕoprio)
   diretorio_atual(Dir),
   append(Dir, [Name], Out),
   set_diretorio_atual(Out).
-
 
 % retorna true se o arquivo está apagado.
 arquivo_esta_apagado(Servidor, Nome) :-
@@ -130,17 +136,12 @@ connect("").
 connect("135.110.60.200") :-
  writeln("Esse é o seu Host.").
 
-connect("112.84.211.124") :-
-  set_diretorio_atual(["112.84.211.124", "home"]).
-
-connect("150.189.56.65") :-
-  set_diretorio_atual(["150.189.56.65", "home"]).
-
-connect("112.84.211.124") :-
-  set_diretorio_atual(["112.84.211.124", "home"]).
-
 connect("220.99.134.37") :-
   set_diretorio_atual(["220.99.134.37"]).
+
+connect(X) :-
+  diretorio(X, _, _),
+  set_diretorio_atual([X, "home"]).
 
 % Disconnect
 disconnect(["135.110.60.200"|_]) :-
@@ -158,32 +159,26 @@ escreve_lista_arquivos([Arquivo1|Tail]) :-
   arquivo_esta_apagado(Servidor, Nome),
   escreve_lista_arquivos(Tail).
 
-escreve_lista_arquivos([Arquivo1|Tail]) :-
-  Arquivo1 = arquivo(Nome,_),
+escreve_lista_arquivos([arquivo(Nome,_)|Tail]) :-
   writeln(Nome),
   escreve_lista_arquivos(Tail).
 
-
 escreve_lista_diretorios([]).
 
-escreve_lista_diretorios([Diretorio1|Tail]) :-
-  Diretorio1 = diretorio(Nome,_,_),
-  writeln(Nome),
+escreve_lista_diretorios([diretorio(Nome,_,_)|Tail]) :-
+  write(Nome), writeln("/"),
   escreve_lista_diretorios(Tail).
 
 list_files :-
   retorna_diretorio_atual(DirAtual),
-  writeln(DirAtual),
-  diretorio(_,Diretorios,Arquivos) = DirAtual,
+  diretorio(_, Subdirs, Arquivos) = DirAtual,
   escreve_lista_arquivos(Arquivos),
-  escreve_lista_diretorios(Diretorios). 
+  escreve_lista_diretorios(Subdirs).
 
 % Cat
 cat(NomeArquivo) :-
-  retorna_diretorio_atual(DirY),
-  diretorio(_,_,Arquivos) = DirY,
-  retorna_arquivo_de_lista(NomeArquivo, Arquivos, ArquivoX),
-  arquivo(Nome,Conteudo) = ArquivoX,
+  retorna_diretorio_atual(diretorio(_,_,Arquivos)),
+  retorna_arquivo_de_lista(NomeArquivo, Arquivos, arquivo(_,Conteudo)),
   writeln(Conteudo).
 
 % aqui o rm
@@ -213,7 +208,7 @@ chamaFuncao("clear", []) :- shell(clear).
 chamaFuncao("clear", _) :- writeln("A função clear não precisa de parâmetros.").
 chamaFuncao("connect", []) :- writeln("Informe um Host.").
 chamaFuncao("connect", [Host|_]) :- connect(Host).
-chamaFuncao("connect", [Host|_]) :- writeln("Informe um Host válido.").
+chamaFuncao("connect", _) :- writeln("Informe um Host válido.").
 chamaFuncao("disconnect", []) :- diretorio_atual(DirX), disconnect(DirX).
 chamaFuncao("disconnect", _) :- writeln("A função disconnect não precisa de parâmetros.").
 chamaFuncao("ls", []) :- list_files.
@@ -230,7 +225,7 @@ chamaFuncao("getmessage", []) :-
   id_mensagem(Id),
   escreve_mensagem(Id).
 chamaFuncao("getmessage", _) :-
-  write("A função getmessage não precisa de parâmetros"), nl.
+  writeln("A função getmessage não precisa de parâmetros").
 %chamaFuncao("sshinterpol", Params) :-
 %  sshinterpol(Params).
 chamaFuncao("connect", _) :-
@@ -304,6 +299,6 @@ menu :-
   escolha_menu(N).
 
 main :-
-  shell(clear),
+  %shell(clear),
   escreve_mensagem(0),
   menu.
