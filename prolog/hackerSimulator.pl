@@ -188,7 +188,8 @@ cat(NomeArquivo) :-
   retorna_arquivo_de_lista(NomeArquivo, Arquivos, arquivo(_,Conteudo)),
   writeln(Conteudo).
 
-% aqui o rm
+% rm - essa funcao ao ser chamada apaga um arquivo do diretorio, arquivo esse
+% que será verificado a existencia no diretorio atual
 remove_arquivo_de_lista([], _) :- writeln("Arquivo não encontrado no diretório.").
 
 remove_arquivo_de_lista([Arquivo1|_], Name) :-
@@ -210,6 +211,8 @@ remove_file(Name) :-
   diretorio(_,_,Arquivos) = DirAtual,
   remove_arquivo_de_lista(Arquivos, Name).
 
+% a partir da entrada do usuario identifica o comando desejado
+% juntamente com os atributos
 chamaFuncao("", _).
 chamaFuncao("clear", []) :- shell(clear).
 chamaFuncao("clear", _) :- writeln("A função clear não precisa de parâmetros.").
@@ -289,7 +292,6 @@ talvez_imprime_mensagem :-
   set_imprimiu_mensagem.
 
 % Selecionando mensagem para enviar de acordo com o que é feito
-
 seleciona_mensagem("connect 112.84.211.124", 4) :-
   set_id_mensagem(5),
   set_nao_imprimiu_mensagem.
