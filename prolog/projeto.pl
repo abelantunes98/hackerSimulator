@@ -81,6 +81,12 @@ retorna_diretorio_de_lista(Name, [Diretorio1|_], Diretorio1) :-
 retorna_diretorio_de_lista(Name, [_|Resto], X) :-
   retorna_diretorio_de_lista(Name, Resto, X).
 
+retorna_arquivo_de_lista(Nome, [Arquivo1|_], Arquivo1) :-
+  arquivo(Nome,_) = Arquivo1.
+
+retorna_arquivo_de_lista(Nome, [_|Resto], X) :-
+  retorna_arquivo_de_lista(Nome, Resto, X).
+
 % aqui o cd
 remove_last([], []).
 remove_last([_], []).
@@ -93,6 +99,7 @@ change_directory("..") :-
 change_directory("..") :-
   diretorio_atual(Dir),
   remove_last(Dir, NewDir),
+  writeln(NewDir),
   set_diretorio_atual(NewDir).
 
 change_directory(Name) :-
@@ -102,8 +109,6 @@ change_directory(Name) :-
   diretorio_atual(Dir),
   append(Dir, [Name], Out),
   set_diretorio_atual(Out).
-
-
 
 
 % retorna true se o arquivo está apagado.
@@ -168,9 +173,18 @@ escreve_lista_diretorios([Diretorio1|Tail]) :-
 
 list_files :-
   retorna_diretorio_atual(DirAtual),
+  writeln(DirAtual),
   diretorio(_,Diretorios,Arquivos) = DirAtual,
   escreve_lista_arquivos(Arquivos),
   escreve_lista_diretorios(Diretorios). 
+
+% Cat
+cat(NomeArquivo) :-
+  retorna_diretorio_atual(DirY),
+  diretorio(_,_,Arquivos) = DirY,
+  retorna_arquivo_de_lista(NomeArquivo, Arquivos, ArquivoX),
+  arquivo(Nome,Conteudo) = ArquivoX,
+  writeln(Conteudo).
 
 % aqui o rm
 remove_arquivo_de_lista([], _) :- writeln("Arquivo não encontrado no diretório.").
@@ -204,12 +218,14 @@ chamaFuncao("disconnect", []) :- diretorio_atual(DirX), disconnect(DirX).
 chamaFuncao("disconnect", _) :- writeln("A função disconnect não precisa de parâmetros.").
 chamaFuncao("ls", []) :- list_files.
 chamaFuncao("ls", _) :- writeln("A função ls não precisa de parâmetros").
+chamaFuncao("cat", []) :- writeln("Informe o arquivo que deseja ler.").
+chamaFuncao("cat", [Nome|_]) :- cat(Nome).
+chamaFuncao("cat", [Nome|_]) :- write("Arquivo não encontrado: "), writeln(Nome).
 chamaFuncao("cd", [Param|_]) :- change_directory(Param).
 chamaFuncao("cd", [Param|_]) :- write("Diretório não encontrado: "), writeln(Param).
 chamaFuncao("cd", _) :- writeln("A função cd precisa de um parâmetro.").
 chamaFuncao("rm", [Param|_]) :- remove_file(Param).
 chamaFuncao("rm", _) :- writeln("A função rm precisa de um parâmetro.").
-%chamaFuncao("cat", Params) :- cat(Params).
 chamaFuncao("getmessage", []) :-
   id_mensagem(Id),
   escreve_mensagem(Id).
@@ -217,18 +233,12 @@ chamaFuncao("getmessage", _) :-
   write("A função getmessage não precisa de parâmetros"), nl.
 %chamaFuncao("sshinterpol", Params) :-
 %  sshinterpol(Params).
-%chamaFuncao("connect", Params) :-
-%  connect(Params),
-%  write("Connecting to "), write(Mensagem), write("...").
 chamaFuncao("connect", _) :-
   write("Informe um host válido."), nl.
 chamaFuncao("help", _) :- help, nl.
 chamaFuncao("exit", _) :- 
   write("Terminando jogo e voltando para o menu..."), nl,
-  %shell(clear),
   menu.
-%chamaFuncao("disconnect", []) :- disconnect.
-%chamaFuncao("disconnect", _) :- write("A função disconnect não precisa de parâmetros").
 chamaFuncao(Funcao, _) :- write("Função desconhecida: "), writeln(Funcao).
 
 formataCaminhoAtual([], "").
