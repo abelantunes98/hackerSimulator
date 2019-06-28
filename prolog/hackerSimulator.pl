@@ -10,7 +10,7 @@
 set_diretorio_atual(Dir) :- retractall(diretorio_atual(_)), asserta(diretorio_atual(Dir)).
 
 % o predicado reset_arquivos_apagados reseta a lista para o inicial
-% o arquivo apagado eh representado pela tupla (servidor, nome)
+% o arquivo apagado eh representado pela lista [servidor, nome]
 % apaga_arquivo(Arq) adiciona Arq aos arquivos apagados
 % nao tem como "desapagar" um arquivo, apenas resetar toda a lista
 :- dynamic arquivos_apagados/1.
@@ -46,6 +46,7 @@ espera_enter :-
   write("\nDigite Enter para continuar..."),
   readc(_).
 
+% servidor_com_ip pergunta qual servidor possui o IP especificado e o retorna da lista
 servidor_com_ip("135.110.60.200", DiretorioAtual) :-
   servidores([DiretorioAtual, _, _, _]).
 
@@ -94,7 +95,7 @@ retorna_arquivo_de_lista(Nome, [Arquivo1|_], Arquivo1) :-
 retorna_arquivo_de_lista(Nome, [_|Resto], X) :-
   retorna_arquivo_de_lista(Nome, Resto, X).
 
-% aqui o cd
+% comando cd: muda o diretorio atual
 remove_last([], []).
 remove_last([_], []).
 remove_last([X|Xs], [X|Removed]) :- 
@@ -127,8 +128,8 @@ arquivo_esta_apagado_r(Servidor, Nome, [[Servidor, Nome]|_]).
 arquivo_esta_apagado_r(Servidor, Nome, [_|Tail]) :-
   arquivo_esta_apagado_r(Servidor, Nome, Tail).
 
-% Connect - Recebe um ip e caso esse ip exista no jogo retorna uma nova
-% lista para representar o diretorio atual, caso nao exista o ip, retorna uma lista vazia
+% connect - o predicado recebe um ip e caso esse ip exista no jogo define uma nova
+% lista para representar o diretorio atual, caso nao exista o ip, o predicado eh falso
 connect("").
 
 connect("135.110.60.200") :-
@@ -143,14 +144,14 @@ connect("112.84.211.124") :-
 connect("150.189.56.65") :-
   set_diretorio_atual(["150.189.56.65", "home"]).
 
-% Disconnect - desconecta o usuario de um servidor remoto
+% disconnect - desconecta o usuario de um servidor remoto
 disconnect(["135.110.60.200"|_]) :-
   writeln("Você não está conectado a um Host externo.").
 
 disconnect([_|_]) :-
   set_diretorio_atual(["135.110.60.200", "home"]).
 
-% ls - essa funcao apartir do diretorio recebido retorna seus 
+% ls - essa funcao a partir do diretorio recebido escreve seus 
 % arquivos e subdiretorios
 escreve_lista_arquivos([]).
 
@@ -176,11 +177,11 @@ list_files :-
   escreve_lista_arquivos(Arquivos),
   escreve_lista_diretorios(Subdirs).
 
-% Cat - a partir do nome do arquivo ele retorna seu conteudo será mostrado 
+% cat - a partir do nome do arquivo escreve seu conteudo 
 % caso o arquivo nao exista mostra a mensagem arquivo nao encontrado
 cat(NomeArquivo) :-
   retorna_diretorio_atual(diretorio(_,_,Arquivos)),
-  retorna_arquivo_de_lista(NomeArquivo, Arquivos, arquivo(_,Conteudo)),
+  retorna_arquivo_de_lista(NomeArquivo, Arquivos, arquivo(_,_)),
   diretorio_atual([Servidor|_]),
   arquivo_esta_apagado(Servidor, NomeArquivo),
   write("Arquivo não encontrado: "), writeln(NomeArquivo).
@@ -221,6 +222,8 @@ chamaFuncao("clear", _) :- writeln("A função clear não precisa de parâmetros
 chamaFuncao("connect", []) :- writeln("Informe um Host.").
 chamaFuncao("connect", [Host|_]) :- connect(Host).
 chamaFuncao("connect", _) :- writeln("Informe um Host válido.").
+chamaFuncao("connect", _) :-
+  write("Informe um host válido."), nl.
 chamaFuncao("disconnect", []) :- diretorio_atual(DirX), disconnect(DirX).
 chamaFuncao("disconnect", _) :- writeln("A função disconnect não precisa de parâmetros.").
 chamaFuncao("ls", []) :- list_files.
@@ -238,10 +241,11 @@ chamaFuncao("getmessage", []) :-
   escreve_mensagem(Id).
 chamaFuncao("getmessage", _) :-
   writeln("A função getmessage não precisa de parâmetros").
+
 chamaFuncao("sshinterpol", [_|_]) :-
   diretorio_atual(["150.189.56.65"|_]),
   arquivo_esta_apagado("150.189.56.65", "sshinterpol"),
-  writeln("Função não encontrada: sshinterpol").
+  writeln("Função desconhecida: sshinterpol").
 chamaFuncao("sshinterpol", ["220.99.134.37"|_]) :-
   diretorio_atual(["150.189.56.65"|_]).
 chamaFuncao("sshinterpol", ["150.189.56.65"|_]) :-
@@ -259,16 +263,14 @@ chamaFuncao("sshinterpol", [_|_]) :-
 chamaFuncao("sshinterpol", [_|_]) :-
  writeln("Função desconhecida: sshinterpol").
 
-chamaFuncao("connect", _) :-
-  write("Informe um host válido."), nl.
 chamaFuncao("help", _) :- help, nl.
 chamaFuncao("exit", _) :- 
+  shell(clear),
   write("Terminando jogo e voltando para o menu..."), nl,
-  set_id_mensagem(0),
-  set_nao_imprimiu_mensagem,
   menu.
 chamaFuncao(Funcao, _) :- write("Função desconhecida: "), writeln(Funcao).
 
+% predicados que definem o prompt a ser mostrado antes da entrada do usuario
 formataCaminhoAtual([], "").
 formataCaminhoAtual([Dh|[]], CaminhoFormatado) :-
   string_concat(Dh, "/", CaminhoFormatado).
@@ -285,6 +287,7 @@ escreve_prompt :-
   write(CaminhoFormatado),
   write(":>> ").
 
+% predicados para imprimir uma mensagem caso seja pedido
 talvez_imprime_mensagem :-
   ja_imprimiu_mensagem.
 
@@ -293,7 +296,8 @@ talvez_imprime_mensagem :-
   escreve_mensagem(Id), nl,
   set_imprimiu_mensagem.
 
-% Selecionando mensagem para enviar de acordo com o que é feito
+% selecionando mensagem para enviar de acordo com o que é feito
+% para dar continuidade a historia do jogo
 seleciona_mensagem("connect 112.84.211.124", 4) :-
   set_id_mensagem(5),
   set_nao_imprimiu_mensagem.
@@ -328,6 +332,7 @@ seleciona_mensagem("disconnect", 8) :-
 
 seleciona_mensagem(_,_).
 
+% predicado recursivo para rodar o loop principal do jogo
 main_loop :-
   talvez_imprime_mensagem,
   escreve_prompt,
@@ -338,11 +343,11 @@ main_loop :-
   chamaFuncao(NomeFuncao, Params),
   main_loop.
 
+% prepara o ambiente para iniciar o jogo
 start :-
   shell(clear),
   set_diretorio_atual(["135.110.60.200", "home"]),
   reset_arquivos_apagados,
-  write("starting"), nl,
   escreve_mensagem(1), espera_enter,
   escreve_mensagem(2), espera_enter,
   escreve_mensagem(3), espera_enter,
@@ -351,24 +356,25 @@ start :-
   set_id_mensagem(4),
   main_loop.
 
+% escolhe uma opcao do menu
 escolha_menu(1) :- start.
 escolha_menu(2) :- % creditos
-  %shell(clear),
+  shell(clear),
   escreve_mensagem(12),
   espera_enter,
-  %shell(clear),
+  shell(clear),
   menu.
 escolha_menu(3) :- halt. % sair
-escolha_menu(A) :- write(A), menu.
+escolha_menu(_) :- shell(clear), menu.
 
+% menu principal do jogo
 menu :-
-  shell(clear),
   escreve_mensagem(11),
   readc(Escolha),
   number_string(N, Escolha),
   escolha_menu(N).
 
 main :-
-  %shell(clear),
+  shell(clear),
   escreve_mensagem(0),
   menu.
