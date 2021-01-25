@@ -1,0 +1,71 @@
+[
+    {
+        "idm" : 0,
+        "mensagem" : "Iniciando HackSimulator...\n\n"
+    },
+
+    {
+        "idm" : 1,
+        "mensagem" : "\nOi.\n....\nIsso é bem estranho... Tanto pra você quanto pra mim.\nEu acho que deveria escrever isso no passado, mesmo que seja difícil admitir que\nacabou.\nMeu nome é Hash, e se você está lendo isso, provavelmente eu já esteja morto.\n\n"
+    },
+
+    {
+        "idm" : 2,
+        "mensagem" : "\nEssa mensagem foi programada para ser enviada pelo servidor após\nele passar 14 dias sem que eu conseguisse logar. Bom, parece que isso realmente aconteceu.\n\nSei que isso parece maluco, mas você a única pessoa que posso confiar nesse\nmomento, preciso de sua ajuda. Você tá dentro? \n\n"
+    },
+
+    {
+        "idm" : 3,
+        "mensagem" : "\nOK, vamos parar de conversas e partir para a ação.\n"
+    },
+
+    {
+        "idm" : 4,
+        "mensagem" : "\nDica: Digite no terminal o comando connect [ip], trocando o trecho [ip],\npelo número ip da minha máquina, que é 112.84.211.124. Para assim se conectar a minha\nmáquina.\n"
+    },
+
+    {
+        "idm" : 5,
+        "mensagem" : "\nHash: procure no meu sistema de arquivos vestígios. Procure por mensagens que\npossam ter deixado em meu PC por alguma pasta, e principalmente você tem que achar\nalgum IP diferente do meu e do seu, na pasta de LOGs do sistema de arquivos.\nUse o comando help para obter ajuda com os comandos do sistema.\nEcontrando o ip, não esqueça de anotar, pois no final ao olhar tudo dos meus\narquivos, você deve apagar todos os ip's da pasta LOG para evitar que lhe achem. Para\ndesconectar do servidor, é só usar o comando disconnect.\n"
+    },
+
+    {
+        "idm" : 6,
+        "mensagem" : "\nHash: Agora que você provavelmente já deve saber o que deve ter acontecido\ncomigo, e pistas de encontrar quem foi, irei lhe dar uma tarefa. Se conecte a uma máquina\nzumbi, que é uma máquina que é usada remotamente sem o dono saber\nO IP da máquina zumbi é 150.189.56.65\n"
+    },
+
+    {
+        "idm" : 7,
+        "mensagem" : "\nHash: Agora eu preciso que você encontre e execute um programa, não lembro o seu nome,\nmas provavelmente é algo relacionado com interpol. Passe como parâmetro o IP que foi anotado\nanteriormente. Isso acionará a polícia para no endereço do suspeito.\nApós executar se desconecte da máquina.\nCuidado pra não deixar rastros!!\n"
+    },
+
+    {
+        "idm" : 8,
+        "mensagem" : "\nHash: ALERTA! Novo IP 220.99.134.37 conectado! Essa ferramenta foi feita para\nacionamento da polícia em novos IPs acessados! Todos os arquivos serão expostos em\n3... 2... 1...\n"
+    },
+
+    {
+        "idm" : 9,
+        "mensagem" : "\nOi novamente.\nSou eu, Hash, e se você está lendo isso, eu já estou morto, o que é uma pena.\n\nMas isso também significa que você os parou.\nEntão... acho que terminamos. Você conseguiu!!\nFazer isso foi a nossa última chance de conseguir justiça.\nEntão... obrigado!\nObrigado mesmo!!\n"
+    },
+
+    {
+	     "idm" : 10,
+	     "mensagem" : "\nHuum... Você conseguiu chamar a polícia, mas esqueceu seu log em algumas máquinas... Logo será o próximo...\n"
+    },
+
+    {
+      "idm" : 11,
+      "mensagem" : "\n  _    _                  _                       _____   _                       _           _
+ | |  | |                | |                     / ____| (_)                     | |         | |                 \n
+ | |__| |   __ _    ___  | | __   ___   _ __    | (___    _   _ __ ___    _   _  | |   __ _  | |_    ___    _ __ \n
+ |  __  |  / _` |  / __| | |/ /  / _ \\ | '__|    \\___ \\  | | | '_ ` _ \\  | | | | | |  / _` | | __|  / _ \\  | '__|\n
+ | |  | | | (_| | | (__  |   <  |  __/ | |       ____) | | | | | | | | | | |_| | | | | (_| | | |_  | (_) | | |   \n
+ |_|  |_|  \\__,_|  \\___| |_|\\_\\  \\___| |_|      |_____/  |_| |_| |_| |_|  \\__,_| |_|  \\__,_|  \\__|  \\___/  |_|\n\n1. Jogar\n2. Créditos\n3. Sair\n\nDigite uma opção para continuar: "
+   },
+
+   {
+     "idm" : 12,
+     "mensagem" : "\n\n    Alunos:\n            Abel Antunes de Lima Neto\n            Igor Santa Ritta Seabra\n            José Guilherme Coelho de Oliveira\n            Siuanny Barbosa dos Santos Rocha\n            Victor Paz de Farias Braga\n            Wesley Roseno Saraiva\n\n    Projeto desenvolvido para a disciplina de Paradigmas de Linguagem de Programação @UFCG\n\n"
+   }
+]
